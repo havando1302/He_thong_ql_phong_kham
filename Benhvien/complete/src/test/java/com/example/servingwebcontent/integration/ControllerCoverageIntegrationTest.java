@@ -1,0 +1,271 @@
+package com.example.servingwebcontent.integration;
+
+import com.example.servingwebcontent.security.AuthConstants;
+import com.example.servingwebcontent.Model.Patient;
+import com.example.servingwebcontent.Model.Room;
+import com.example.servingwebcontent.database.PatientDatabase;
+import com.example.servingwebcontent.database.RoomDatabase;
+import com.example.servingwebcontent.database.DatabaseConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Calendar;
+import java.sql.Connection;
+
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static com.example.servingwebcontent.testutil.CsrfTestSupport.csrfPost;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@Timeout(30)
+class ControllerCoverageIntegrationTest {
+
+    private static final String PATIENT_ID = "TEST_COVERAGE_PATIENT";
+    private static final String ROOM_ID = "TEST_COVERAGE_ROOM";
+
+    private final PatientDatabase patientDatabase = new PatientDatabase();
+    private final RoomDatabase roomDatabase = new RoomDatabase();
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @BeforeAll
+    static void requireDatabase() {
+        assumeTrue(databaseIsAvailable(),
+                "MySQL test database is unavailable at localhost:3306; start Docker Compose first");
+    }
+
+    private static boolean databaseIsAvailable() {
+        try (Connection ignored = DatabaseConfig.getConnection()) {
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    @BeforeEach
+    void createFixtures() {
+        Calendar dob = Calendar.getInstance();
+        dob.add(Calendar.YEAR, -25);
+        patientDatabase.saveOrUpdatePatient(new Patient(
+                PATIENT_ID, "Coverage Patient", dob, 25, "Nam", "Ha Noi", "0900000001"));
+        roomDatabase.saveOrUpdateRoom(new Room(
+                ROOM_ID, "Coverage Room", "BS Coverage", 5, "Hoat dong"));
+    }
+
+    @AfterEach
+    void removeFixtures() {
+        patientDatabase.deletePatientById(PATIENT_ID);
+        roomDatabase.deleteRoom(ROOM_ID);
+    }
+
+    @Test
+    void patientsPageWithStaffSessionShouldReturnPatientsView() throws Exception {
+        mockMvc.perform(get("/patients")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("patients"))
+                .andExpect(model().attributeExists("patients"));
+    }
+
+    @Test
+    void patientsSearchShouldReturnPatientsView() throws Exception {
+        mockMvc.perform(get("/patients").param("search", "P001")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("patients"))
+                .andExpect(model().attributeExists("search"));
+    }
+
+    @Test
+    void patientEditShouldReturnPatientsView() throws Exception {
+        mockMvc.perform(get("/patients/edit/" + PATIENT_ID)
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("patients"))
+                .andExpect(model().attributeExists("editPatient"));
+    }
+
+    @Test
+    void roomsPageWithStaffSessionShouldReturnRoomView() throws Exception {
+        mockMvc.perform(get("/room")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("phongdieutri"))
+                .andExpect(model().attributeExists("roomList"));
+    }
+
+    @Test
+    void roomSearchShouldReturnRoomView() throws Exception {
+        mockMvc.perform(get("/room/search").param("keyword", "R001")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("phongdieutri"));
+    }
+
+    @Test
+    void roomApiShouldReturnJson() throws Exception {
+        mockMvc.perform(get("/room/api/" + ROOM_ID)
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(ROOM_ID));
+    }
+
+    @Test
+    void roomCountShouldReturnNumber() throws Exception {
+        mockMvc.perform(get("/room/count")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void benhanPageWithStaffSessionShouldReturnBenhanView() throws Exception {
+        mockMvc.perform(get("/benhan")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("benhan"))
+                .andExpect(model().attributeExists("benhans"));
+    }
+
+    @Test
+    void benhanSearchShouldReturnBenhanView() throws Exception {
+        mockMvc.perform(get("/benhan").param("search", "BA001")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("benhan"))
+                .andExpect(model().attributeExists("search"));
+    }
+
+    @Test
+    void schedulePageWithStaffSessionShouldReturnScheduleView() throws Exception {
+        mockMvc.perform(get("/schedule")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("lichcapthuoc"))
+                .andExpect(model().attributeExists("scheduleList"));
+    }
+
+    @Test
+    void scheduleSearchShouldReturnScheduleView() throws Exception {
+        mockMvc.perform(get("/schedule").param("search", "BT001")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("lichcapthuoc"))
+                .andExpect(model().attributeExists("search"));
+    }
+
+    @Test
+    void adminStaffPageShouldReturnAdminStaffView() throws Exception {
+        mockMvc.perform(get("/admin/staff")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "admin")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin_staff"));
+    }
+
+    @Test
+    void adminStaffPasswordMismatchShouldShowError() throws Exception {
+        mockMvc.perform(csrfPost("/admin/staff")
+                        .param("username", "staff_mismatch")
+                        .param("password", "123456")
+                        .param("confirmPassword", "654321")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "admin")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin_staff"))
+                .andExpect(model().attributeExists("errorMessage"));
+    }
+
+    @Test
+    void adminAccountsPageShouldReturnAccountsView() throws Exception {
+        mockMvc.perform(get("/admin/accounts")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "admin")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "ADMIN"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin_accounts"))
+                .andExpect(model().attributeExists("users"));
+    }
+
+    @Test
+    void appointmentsManageWithStaffShouldReturnView() throws Exception {
+        mockMvc.perform(get("/appointments/manage")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("appointments_manage"))
+                .andExpect(model().attributeExists("appointments"));
+    }
+
+    @Test
+    void appointmentsManageStatusShouldRedirect() throws Exception {
+        mockMvc.perform(csrfPost("/appointments/manage/status")
+                        .param("id", "NOT_EXISTS")
+                        .param("status", "bad-status")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "staff")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "STAFF"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/appointments/manage"));
+    }
+
+    @Test
+    void portalProfileShouldReturnProfileView() throws Exception {
+        mockMvc.perform(get("/portal/profile")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "patient1")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "USER"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("portal_profile"));
+    }
+
+    @Test
+    void portalProfileEditShouldReturnEditView() throws Exception {
+        mockMvc.perform(get("/portal/profile/edit")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "patient1")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "USER"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("portal_profile_edit"));
+    }
+
+    @Test
+    void portalPasswordMismatchShouldReturnPasswordView() throws Exception {
+        mockMvc.perform(csrfPost("/portal/password")
+                        .param("currentPassword", "123456")
+                        .param("newPassword", "abcdef")
+                        .param("confirmPassword", "ghijkl")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "patient1")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "USER"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("portal_password"))
+                .andExpect(model().attributeExists("errorMessage"));
+    }
+
+    @Test
+    void portalAppointmentsNewShouldReturnNewAppointmentView() throws Exception {
+        mockMvc.perform(get("/portal/appointments/new")
+                        .sessionAttr(AuthConstants.SESSION_USERNAME, "patient1")
+                        .sessionAttr(AuthConstants.SESSION_ROLE, "USER"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("portal_appointments_new"));
+    }
+}
