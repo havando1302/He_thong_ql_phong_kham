@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<!-- ==========================================================================
+     SIDEBAR FRAGMENT
+     ========================================================================== -->
+<aside th:fragment="sidebar(active)" class="saas-sidebar" id="saasSidebar">
+    <!-- Brand Header -->
+    <div class="sidebar-header">
+        <a href="/dashboard" class="brand-wrap">
+            <div class="brand-logo-icon">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="brand-info">
+                <span class="brand-title">MEDICARE PRO</span>
+                <span class="brand-tagline">
+                    <span class="pulse-dot"></span> Hệ Thống Phòng Khám
+                </span>
+            </div>
+        </a>
+        <button type="button" class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Thu gọn / Mở rộng menu">
+            <i class="fas fa-angles-left"></i>
+        </button>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">CHỨC NĂNG CHÍNH</div>
+
+        <a href="/dashboard" class="nav-item" th:classappend="${active == 'dashboard'} ? 'active' : ''">
+            <i class="fas fa-chart-pie"></i>
+            <span>Tổng Quan</span>
+        </a>
+
+        <a href="/patients" class="nav-item" th:classappend="${active == 'patients'} ? 'active' : ''">
+            <i class="fas fa-user-injured"></i>
+            <span>Bệnh Nhân</span>
+        </a>
+
+        <a href="/benhan" class="nav-item" th:classappend="${active == 'benhan'} ? 'active' : ''">
+            <i class="fas fa-file-medical"></i>
+            <span>Bệnh Án</span>
+        </a>
+
+        <a href="/room" class="nav-item" th:classappend="${active == 'room'} ? 'active' : ''">
+            <i class="fas fa-hospital-user"></i>
+            <span>Phòng Điều Trị</span>
+        </a>
+
+        <a href="/schedule" class="nav-item" th:classappend="${active == 'schedule'} ? 'active' : ''">
+            <i class="fas fa-pills"></i>
+            <span>Lịch Cấp Thuốc</span>
+        </a>
+
+        <a href="/appointments/manage" class="nav-item" th:classappend="${active == 'appointments'} ? 'active' : ''">
+            <i class="fas fa-calendar-check"></i>
+            <span>Lịch Khám</span>
+        </a>
+
+        <!-- Admin Only Section -->
+        <div th:if="${#strings.equalsIgnoreCase(session.AUTH_ROLE, 'ADMIN') or #strings.equalsIgnoreCase(role, 'ADMIN') or #strings.equalsIgnoreCase(session.AUTH_USERNAME, 'admin') or #strings.equalsIgnoreCase(username, 'admin')}">
+            <div class="nav-section-title">QUẢN TRỊ HỆ THỐNG</div>
+
+            <a href="/admin/accounts" class="nav-item" th:classappend="${active == 'accounts'} ? 'active' : ''">
+                <i class="fas fa-users-cog"></i>
+                <span>Quản Lý Tài Khoản</span>
+            </a>
+
+            <a href="/admin/staff" class="nav-item" th:classappend="${active == 'staff'} ? 'active' : ''">
+                <i class="fas fa-user-plus"></i>
+                <span>Tạo Nhân Viên</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Sidebar Footer / Current User Profile -->
+    <div class="sidebar-footer">
+        <div class="user-profile-card">
+            <div class="user-avatar-pill">
+                <i class="fas fa-user-md"></i>
+            </div>
+            <div class="user-meta-info">
+                <span class="user-display-name" 
+                      th:text="${session.AUTH_USERNAME != null ? session.AUTH_USERNAME : (username != null ? username : 'Admin')}">Admin</span>
+                <span class="user-role-badge">
+                    <span class="pulse-dot"></span>
+                    <span th:text="${session.AUTH_ROLE != null ? session.AUTH_ROLE : (role != null ? role : 'ADMIN')}">ADMIN</span>
+                </span>
+            </div>
+            <a href="/logout" class="logout-icon-btn" title="Đăng xuất hệ thống" onclick="return confirm('Bạn có chắc chắn muốn đăng xuất?')">
+                <i class="fas fa-power-off"></i>
+            </a>
+        </div>
+    </div>
+</aside>
+
+<!-- ==========================================================================
+     TOPBAR FRAGMENT
+     ========================================================================== -->
+<header th:fragment="topbar(pageTitle, active)" class="saas-topbar">
+    <div class="topbar-left">
+        <!-- Mobile Drawer Hamburger Toggle -->
+        <button type="button" class="mobile-menu-trigger" aria-label="Mở menu điều hướng">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Breadcrumb Navigation -->
+        <nav class="breadcrumb-nav" aria-label="Đường dẫn điều hướng">
+            <a href="/dashboard"><i class="fas fa-home"></i> Trang Chủ</a>
+            <span class="breadcrumb-sep"><i class="fas fa-chevron-right"></i></span>
+            <span class="breadcrumb-current" th:text="${pageTitle}">Quản Lý</span>
+        </nav>
+    </div>
+
+    <div class="topbar-right">
+        <!-- Real-time Clinic Live Clock -->
+        <div class="clock-chip" title="Thời gian hệ thống phòng khám theo thời gian thực">
+            <i class="fas fa-clock"></i>
+            <strong id="liveClockTime">--:--:--</strong>
+            <span id="liveClockDate" style="opacity: 0.8; font-size: 0.8rem;">--</span>
+        </div>
+
+        <!-- Dark / Light Mode Switcher -->
+        <button type="button" class="theme-switch-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển đổi giao diện Sáng / Tối">
+            <i class="fas fa-moon"></i>
+        </button>
+
+        <!-- User Quick Status Pill -->
+        <div class="topbar-user-btn">
+            <div class="topbar-user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="topbar-user-name" 
+                  th:text="${session.AUTH_USERNAME != null ? session.AUTH_USERNAME : (username != null ? username : 'Admin')}">Admin</span>
+            <a href="/logout" class="logout-icon-btn" style="width:24px; height:24px;" title="Đăng xuất" onclick="return confirm('Đăng xuất khỏi hệ thống?')">
+                <i class="fas fa-sign-out-alt" style="font-size:0.8rem;"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- ==========================================================================
+     FOOTER FRAGMENT
+     ========================================================================== -->
+<footer th:fragment="footer" class="saas-footer">
+    <div class="footer-system-status">
+        <span class="status-pulse-dot"></span>
+        <span>Hệ thống phòng khám trực tuyến 2026 &bull; Hoạt động ổn định</span>
+    </div>
+    <div>
+        <span>Phiên bản <strong>v2.6 SaaS Production</strong> &copy; 2026 MEDICARE PRO. Tất cả quyền được bảo lưu.</span>
+    </div>
+</footer>
+
+</html>

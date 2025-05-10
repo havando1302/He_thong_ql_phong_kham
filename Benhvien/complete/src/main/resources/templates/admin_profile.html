@@ -3,124 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hồ Sơ Người Dùng</title>
-    <link rel="stylesheet" href="/patients.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Hồ Sơ Người Dùng | MEDICARE PRO</title>
+    <link rel="stylesheet" href="/admin-saas.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <header class="page-header">
-        <h1><i class="fas fa-id-card"></i> Hồ Sơ Người Dùng</h1>
-        <nav class="breadcrumb">
-            <a href="/dashboard"><i class="fas fa-home"></i> Trang chủ</a> /
-            <a href="/admin/accounts">Tài khoản</a> / Hồ sơ
-        </nav>
-    </header>
+    <div class="saas-layout">
+        <!-- Mobile Drawer Backdrop -->
+        <div class="mobile-backdrop"></div>
 
-    <div th:if="${errorMessage}" class="alert alert-error">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span th:text="${errorMessage}"></span>
-    </div>
-    <div th:if="${successMessage}" class="alert alert-success">
-        <i class="fas fa-check-circle"></i>
-        <span th:text="${successMessage}"></span>
-    </div>
+        <!-- Unified Sidebar -->
+        <div th:replace="~{fragments/admin_nav :: sidebar(active='accounts')}"></div>
 
-    <div class="form-section">
-        <h2><i class="fas fa-user"></i> Thông tin</h2>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Username</label>
-                <input class="form-control readonly" th:value="${profile.username}" readonly>
-            </div>
-            <div class="form-group">
-                <label>Created</label>
-                <input class="form-control readonly" th:value="${profile.createdAt}" readonly>
-            </div>
+        <!-- Main Viewport -->
+        <div class="saas-main">
+            <!-- Unified Topbar -->
+            <div th:replace="~{fragments/admin_nav :: topbar(pageTitle='Hồ Sơ Tài Khoản', active='accounts')}"></div>
+
+            <!-- Content Area -->
+            <main class="saas-content">
+                <!-- Page Hero Header -->
+                <div class="page-hero">
+                    <div class="hero-titles">
+                        <h1 class="hero-main-title">
+                            <i class="fas fa-id-card"></i> Chi Tiết Tài Khoản: <span class="cell-code" th:text="${profile.username}">username</span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            Cấu hình quyền hạn hệ thống, liên kết mã hồ sơ bệnh nhân và quản lý mật khẩu truy cập.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="/admin/accounts" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay Lại Danh Sách
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Notifications / Alerts -->
+                <div th:if="${errorMessage}" class="saas-alert alert-error">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="saas-alert-content">
+                        <strong>Lỗi:</strong> <span th:text="${errorMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
+                
+                <div th:if="${successMessage}" class="saas-alert alert-success">
+                    <i class="fas fa-circle-check"></i>
+                    <div class="saas-alert-content">
+                        <strong>Thành công:</strong> <span th:text="${successMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:24px;">
+                    <!-- Card 1: Account Overview -->
+                    <div class="saas-card">
+                        <div class="saas-card-header">
+                            <div class="card-header-left">
+                                <h2 class="card-title">
+                                    <i class="fas fa-user-circle"></i> Thông Tin Cơ Bản
+                                </h2>
+                            </div>
+                            <span class="badge badge-purple" th:text="${profile.role}">ROLE</span>
+                        </div>
+                        <div class="saas-card-body">
+                            <div class="form-grid" style="grid-template-columns: 1fr;">
+                                <div class="form-group">
+                                    <label class="form-label">Tên Đăng Nhập:</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-user"></i>
+                                        <input class="form-control readonly" th:value="${profile.username}" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Ngày Khởi Tạo:</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-calendar-check"></i>
+                                        <input class="form-control readonly" th:value="${profile.createdAt}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Link Patient -->
+                    <div class="saas-card" th:if="${profile.username != 'admin'}">
+                        <div class="saas-card-header">
+                            <div class="card-header-left">
+                                <h2 class="card-title">
+                                    <i class="fas fa-link"></i> Liên Kết Hồ Sơ Bệnh Nhân
+                                </h2>
+                            </div>
+                            <span class="card-subtitle">Đồng bộ cổng bệnh nhân</span>
+                        </div>
+                        <div class="saas-card-body">
+                            <form th:action="@{'/admin/accounts/' + ${profile.username} + '/patient'}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                <div class="form-group">
+                                    <label class="form-label" for="patientId">Mã Bệnh Nhân (Patient ID):</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-id-card"></i>
+                                        <input id="patientId" name="patientId" class="form-control" 
+                                               th:value="${profile.patientId}" placeholder="Ví dụ: P001 (để trống nếu hủy liên kết)">
+                                    </div>
+                                    <span class="form-hint">Liên kết tài khoản với mã bệnh nhân để hiển thị đúng lịch khám và bệnh án.</span>
+                                </div>
+                                <div class="form-actions-row" style="margin-top:16px;">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-save"></i> Cập Nhật Liên Kết
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Role Management -->
+                    <div class="saas-card">
+                        <div class="saas-card-header">
+                            <div class="card-header-left">
+                                <h2 class="card-title">
+                                    <i class="fas fa-shield-halved"></i> Phân Quyền Vai Trò
+                                </h2>
+                            </div>
+                            <span class="card-subtitle">RBAC Authorization</span>
+                        </div>
+                        <div class="saas-card-body">
+                            <form th:action="@{'/admin/accounts/' + ${profile.username} + '/role'}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                <div class="form-group">
+                                    <label class="form-label" for="role">Vai Trò Hệ Thống:</label>
+                                    <select id="role" name="role" class="form-control" th:disabled="${profile.username == 'admin'}">
+                                        <option value="ADMIN" th:selected="${profile.role == T(com.example.servingwebcontent.Model.Role).ADMIN}">ADMIN (Quản trị viên tối cao)</option>
+                                        <option value="STAFF" th:selected="${profile.role == T(com.example.servingwebcontent.Model.Role).STAFF}">STAFF (Nhân viên / Bác sĩ)</option>
+                                        <option value="USER" th:selected="${profile.role == T(com.example.servingwebcontent.Model.Role).USER}">USER (Bệnh nhân cổng portal)</option>
+                                    </select>
+                                    <span class="form-hint" th:if="${profile.username == 'admin'}">Tài khoản quản trị viên gốc (admin) không thể hạ quyền.</span>
+                                </div>
+                                <div class="form-actions-row" style="margin-top:16px;">
+                                    <button class="btn btn-primary" type="submit" th:disabled="${profile.username == 'admin'}">
+                                        <i class="fas fa-save"></i> Cập Nhật Quyền
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Password Reset -->
+                    <div class="saas-card">
+                        <div class="saas-card-header">
+                            <div class="card-header-left">
+                                <h2 class="card-title">
+                                    <i class="fas fa-key"></i> Đặt Lại Mật Khẩu
+                                </h2>
+                            </div>
+                            <span class="card-subtitle">Bảo mật tài khoản</span>
+                        </div>
+                        <div class="saas-card-body">
+                            <form th:action="@{'/admin/accounts/' + ${profile.username} + '/password'}" method="post">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                <div class="form-grid" style="grid-template-columns: 1fr;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="password">Mật Khẩu Mới: <span class="required">*</span></label>
+                                        <div class="input-icon-wrap">
+                                            <i class="fas fa-lock"></i>
+                                            <input id="password" type="password" name="password" class="form-control" required placeholder="Tối thiểu 6 ký tự">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="confirmPassword">Xác Nhận Mật Khẩu: <span class="required">*</span></label>
+                                        <div class="input-icon-wrap">
+                                            <i class="fas fa-check-double"></i>
+                                            <input id="confirmPassword" type="password" name="confirmPassword" class="form-control" required placeholder="Nhập lại mật khẩu mới">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions-row" style="margin-top:16px;">
+                                    <button class="btn btn-secondary" type="submit">
+                                        <i class="fas fa-sync"></i> Đổi Mật Khẩu
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Danger Zone (Delete Account) -->
+                    <div class="saas-card" th:if="${profile.username != 'admin'}" style="border-color: var(--danger-border); grid-column: 1 / -1;">
+                        <div class="saas-card-header" style="background: var(--danger-bg);">
+                            <div class="card-header-left">
+                                <h2 class="card-title" style="color:var(--danger-text);">
+                                    <i class="fas fa-triangle-exclamation"></i> Vùng Nguy Hiểm (Danger Zone)
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="saas-card-body" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+                            <div>
+                                <strong style="color:var(--text-primary); display:block; margin-bottom:4px;">Xóa vĩnh viễn tài khoản này</strong>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">
+                                    Một khi đã xóa, tài khoản sẽ không thể đăng nhập hoặc khôi phục dữ liệu đăng nhập.
+                                </p>
+                            </div>
+                            <form th:action="@{'/admin/accounts/' + ${profile.username} + '/delete'}" method="post" style="margin:0;">
+                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                <button class="btn btn-danger" type="submit" onclick="return confirm('CẢNH BÁO CAO: Bạn có thực sự muốn xóa vĩnh viễn tài khoản này?');">
+                                    <i class="fas fa-trash-can"></i> Xóa Vĩnh Viễn Tài Khoản
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Unified Footer -->
+            <div th:replace="~{fragments/admin_nav :: footer}"></div>
         </div>
     </div>
 
-    <div class="form-section" th:if="${profile.username != 'admin'}">
-        <h2><i class="fas fa-link"></i> Liên kết bệnh nhân</h2>
-        <form th:action="@{'/admin/accounts/' + ${profile.username} + '/patient'}" method="post" class="patient-form">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="patientId">Patient ID (ví dụ: P001)</label>
-                    <input id="patientId" name="patientId" class="form-control" th:value="${profile.patientId}" placeholder="Để trống nếu không liên kết">
-                </div>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-save"></i> Cập nhật liên kết
-                </button>
-            </div>
-        </form>
-        <small style="opacity:0.85;">Để lịch khám/bệnh án/lịch thuốc hiển thị đúng cho khách hàng, nên liên kết tài khoản với <code>patient.id</code>.</small>
-    </div>
+    <!-- AI Chatbox Assistant -->
+    <div th:replace="~{fragments/chatbox :: chatbox}"></div>
 
-    <div class="form-section">
-        <h2><i class="fas fa-user-tag"></i> Quyền (Role)</h2>
-        <form th:action="@{'/admin/accounts/' + ${profile.username} + '/role'}" method="post" class="patient-form">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="role">Role</label>
-                    <select id="role" name="role" class="form-control" th:disabled="${profile.username == 'admin'}">
-                        <option value="ADMIN" th:selected="${profile.role == T(com.example.servingwebcontent.Model.Role).ADMIN}">ADMIN</option>
-                        <option value="STAFF" th:selected="${profile.role == T(com.example.servingwebcontent.Model.Role).STAFF}">STAFF</option>
-                        <option value="USER" th:selected="${profile.role == T(com.example.servingwebcontent.Model.Role).USER}">USER</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" type="submit" th:disabled="${profile.username == 'admin'}">
-                    <i class="fas fa-save"></i> Cập nhật role
-                </button>
-                <a href="/admin/accounts" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </a>
-            </div>
-        </form>
-        <small style="opacity:0.85;">Nếu DB chưa có cột <code>role</code> thì cập nhật role có thể thất bại.</small>
-    </div>
-
-    <div class="form-section">
-        <h2><i class="fas fa-key"></i> Reset mật khẩu</h2>
-        <form th:action="@{'/admin/accounts/' + ${profile.username} + '/password'}" method="post" class="patient-form">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="password">Mật khẩu mới</label>
-                    <input id="password" type="password" name="password" class="form-control" required placeholder="ít nhất 6 ký tự">
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Xác nhận mật khẩu</label>
-                    <input id="confirmPassword" type="password" name="confirmPassword" class="form-control" required>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-sync"></i> Reset
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <div class="form-section" th:if="${profile.username != 'admin'}">
-        <h2><i class="fas fa-trash"></i> Xóa tài khoản</h2>
-        <form th:action="@{'/admin/accounts/' + ${profile.username} + '/delete'}" method="post">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <div class="form-actions">
-                <button class="btn btn-reset" type="submit" onclick="return confirm('Xóa tài khoản này?');">
-                    <i class="fas fa-trash"></i> Xóa vĩnh viễn
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Chatbox Fragment -->
-<div th:replace="~{fragments/chatbox :: chatbox}"></div>
+    <!-- Core SaaS Scripts -->
+    <script src="/admin-saas.js"></script>
 </body>
 </html>

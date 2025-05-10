@@ -3,87 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý lịch khám</title>
-    <link rel="stylesheet" href="/patients.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Quản Lý Lịch Khám | MEDICARE PRO</title>
+    <link rel="stylesheet" href="/admin-saas.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <header class="page-header">
-        <h1><i class="fas fa-calendar-check"></i> Quản lý lịch khám</h1>
-        <nav class="breadcrumb">
-            <a href="/dashboard"><i class="fas fa-home"></i> Trang chủ</a> / Lịch khám
-        </nav>
-    </header>
+    <div class="saas-layout">
+        <!-- Mobile Drawer Backdrop -->
+        <div class="mobile-backdrop"></div>
 
-    <div class="table-section">
-        <h3><i class="fas fa-list"></i> Danh sách lịch khám</h3>
+        <!-- Unified Sidebar -->
+        <div th:replace="~{fragments/admin_nav :: sidebar(active='appointments')}"></div>
 
-        <div th:if="${errorMessage}" class="alert alert-error" style="margin-bottom: 16px;">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span th:text="${errorMessage}">Lỗi</span>
-        </div>
+        <!-- Main Viewport -->
+        <div class="saas-main">
+            <!-- Unified Topbar -->
+            <div th:replace="~{fragments/admin_nav :: topbar(pageTitle='Quản Lý Lịch Khám', active='appointments')}"></div>
 
-        <div class="table-wrapper">
-            <table class="data-table" th:if="${appointments != null and !appointments.isEmpty()}">
-                <thead>
-                <tr>
-                    <th>Mã</th>
-                    <th>Mã BN</th>
-                    <th>Phòng</th>
-                    <th>Thời gian</th>
-                    <th>Ghi chú</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="a : ${appointments}">
-                    <td th:text="${a.id}">AP001</td>
-                    <td th:text="${a.patientId}">P001</td>
-                    <td th:text="${a.roomId}">R001</td>
-                    <td th:text="${a.timeStr}">02/04/2026 09:00</td>
-                    <td th:text="${a.note}">Ho, sốt</td>
-                    <td>
-                        <span th:text="${a.status}">PENDING</span>
-                    </td>
-                    <td style="white-space: nowrap;">
-                        <form action="/appointments/manage/status" method="post" style="display:inline;">
-                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                            <input type="hidden" name="id" th:value="${a.id}">
-                            <input type="hidden" name="status" value="CONFIRMED">
-                            <button class="btn btn-search btn-sm" type="submit" th:disabled="${a.status == 'CONFIRMED'}">
-                                <i class="fas fa-check"></i> Duyệt
-                            </button>
-                        </form>
-                        <form action="/appointments/manage/status" method="post" style="display:inline;">
-                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                            <input type="hidden" name="id" th:value="${a.id}">
-                            <input type="hidden" name="status" value="CANCELLED">
-                            <button class="btn btn-reset btn-sm" type="submit" th:disabled="${a.status == 'CANCELLED'}">
-                                <i class="fas fa-times"></i> Từ chối
-                            </button>
-                        </form>
-                        <form th:if="${isAdmin}" action="/appointments/manage/delete" method="post" style="display:inline;">
-                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                            <input type="hidden" name="id" th:value="${a.id}">
-                            <button class="btn btn-secondary btn-sm" type="submit" onclick="return confirm('Xóa lịch khám này?');">
-                                <i class="fas fa-trash"></i> Xóa
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <div th:if="${appointments == null or appointments.isEmpty()}" class="alert alert-error">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Chưa có lịch khám nào.</span>
-            </div>
+            <!-- Content Area -->
+            <main class="saas-content">
+                <!-- Page Hero Header -->
+                <div class="page-hero">
+                    <div class="hero-titles">
+                        <h1 class="hero-main-title">
+                            <i class="fas fa-calendar-check"></i> Quản Lý Lịch Hẹn Khám
+                        </h1>
+                        <p class="hero-subtitle">
+                            Tiếp nhận và kiểm duyệt các yêu cầu đặt lịch hẹn trực tuyến từ cổng bệnh nhân.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Notifications / Alerts -->
+                <div th:if="${errorMessage}" class="saas-alert alert-error">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="saas-alert-content">
+                        <strong>Lỗi:</strong> <span th:text="${errorMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
+                
+                <div th:if="${successMessage}" class="saas-alert alert-success">
+                    <i class="fas fa-circle-check"></i>
+                    <div class="saas-alert-content">
+                        <strong>Thành công:</strong> <span th:text="${successMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
+
+                <!-- KPI Metric Summary -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Tổng Số Lịch Hẹn</span>
+                            <span class="kpi-value" th:text="${appointments != null ? appointments.size() : '0'}">0</span>
+                            <span class="kpi-trend positive"><i class="fas fa-calendar-days"></i> Hồ sơ đặt khám</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-blue">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Tiến Độ Xử Lý</span>
+                            <span class="kpi-value">Trực Tuyến</span>
+                            <span class="kpi-trend positive"><i class="fas fa-bolt"></i> Thời gian thực</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-green">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Kênh Tiếp Nhận</span>
+                            <span class="kpi-value">Portal + AI</span>
+                            <span class="kpi-trend positive"><i class="fas fa-check-circle"></i> Tự động đồng bộ</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-purple">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table Section -->
+                <div class="saas-card">
+                    <!-- Table Toolbar -->
+                    <div class="table-toolbar">
+                        <div class="toolbar-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="table-search-input" placeholder="Lọc nhanh lịch khám (Mã hẹn, Mã BN, Phòng, Trạng thái)...">
+                        </div>
+
+                        <div class="toolbar-actions">
+                            <a href="/appointments/manage" class="btn btn-outline btn-sm" title="Tải lại danh sách">
+                                <i class="fas fa-rotate"></i> Tải lại
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Table Responsive Container -->
+                    <div class="table-responsive-wrapper">
+                        <table class="saas-table saas-data-table" th:if="${appointments != null and !appointments.isEmpty()}">
+                            <thead>
+                                <tr>
+                                    <th>Mã Hẹn</th>
+                                    <th>Mã BN</th>
+                                    <th>Phòng Khám</th>
+                                    <th>Thời Gian Hẹn</th>
+                                    <th>Ghi Chú Triệu Chứng</th>
+                                    <th>Trạng Thái</th>
+                                    <th class="no-sort">Thao Tác Duyệt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="a : ${appointments}">
+                                    <td>
+                                        <span class="cell-code" th:text="${a.id}">AP001</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info" th:text="${a.patientId}">P001</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-warning" th:text="${a.roomId}">R001</span>
+                                    </td>
+                                    <td>
+                                        <strong style="color:var(--text-primary); font-family:var(--font-mono); font-size:0.86rem;" th:text="${a.timeStr}">
+                                            11/11/2026 09:00
+                                        </strong>
+                                    </td>
+                                    <td th:text="${a.note}" th:title="${a.note}" style="max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                        Sốt nhẹ, ho có đờm
+                                    </td>
+                                    <td>
+                                        <span th:if="${a.status == 'CONFIRMED'}" class="badge badge-success">
+                                            <span class="badge-dot"></span> Đã duyệt
+                                        </span>
+                                        <span th:if="${a.status == 'PENDING'}" class="badge badge-warning">
+                                            <span class="badge-dot"></span> Chờ duyệt
+                                        </span>
+                                        <span th:if="${a.status == 'CANCELLED'}" class="badge badge-danger">
+                                            <span class="badge-dot"></span> Đã hủy
+                                        </span>
+                                        <span th:if="${a.status != 'CONFIRMED' && a.status != 'PENDING' && a.status != 'CANCELLED'}" class="badge badge-info">
+                                            <span th:text="${a.status}">KHÁC</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="cell-actions">
+                                            <!-- Duyệt lịch -->
+                                            <form action="/appointments/manage/status" method="post" style="display:inline; margin:0;">
+                                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                                <input type="hidden" name="id" th:value="${a.id}">
+                                                <input type="hidden" name="status" value="CONFIRMED">
+                                                <button class="btn btn-secondary btn-sm" type="submit" 
+                                                        th:disabled="${a.status == 'CONFIRMED'}" title="Xác nhận lịch hẹn">
+                                                    <i class="fas fa-check" style="color:var(--success-solid);"></i> Duyệt
+                                                </button>
+                                            </form>
+
+                                            <!-- Hủy lịch -->
+                                            <form action="/appointments/manage/status" method="post" style="display:inline; margin:0;">
+                                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                                <input type="hidden" name="id" th:value="${a.id}">
+                                                <input type="hidden" name="status" value="CANCELLED">
+                                                <button class="btn btn-outline btn-sm" type="submit" 
+                                                        th:disabled="${a.status == 'CANCELLED'}" title="Hủy lịch hẹn"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn hủy lịch khám này?')">
+                                                    <i class="fas fa-ban" style="color:var(--warning-solid);"></i> Hủy
+                                                </button>
+                                            </form>
+
+                                            <!-- Xóa hẳn -->
+                                            <form action="/appointments/manage/delete" method="post" style="display:inline; margin:0;">
+                                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                                <input type="hidden" name="id" th:value="${a.id}">
+                                                <button class="btn btn-ghost-danger btn-sm" type="submit" title="Xóa hoàn toàn"
+                                                        onclick="return confirm('Xóa vĩnh viễn lịch hẹn này khỏi hệ thống?')">
+                                                    <i class="fas fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Empty State View -->
+                        <div class="empty-state-box table-empty-state" 
+                             th:style="${appointments == null or appointments.isEmpty()} ? 'display:flex;' : 'display:none;'">
+                            <div class="empty-state-icon-wrap">
+                                <i class="fas fa-calendar-xmark"></i>
+                            </div>
+                            <h3 class="empty-state-title">Chưa có lịch hẹn khám nào</h3>
+                            <p class="empty-state-desc">
+                                Hiện tại không có yêu cầu đặt lịch hẹn nào cần xử lý trong hệ thống phòng khám.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Pagination Footer -->
+                    <div class="table-pagination-footer">
+                        <div class="pagination-info">
+                            Hiển thị <strong>1 - 10</strong> trên tổng số <strong th:text="${appointments != null ? appointments.size() : 0}">0</strong> bản ghi
+                        </div>
+                        <div class="pagination-controls">
+                            <div class="page-size-selector">
+                                <span>Mỗi trang:</span>
+                                <select class="page-size-select">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="pagination-buttons">
+                                <!-- Populated dynamically by admin-saas.js -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Unified Footer -->
+            <div th:replace="~{fragments/admin_nav :: footer}"></div>
         </div>
     </div>
-</div>
 
-<!-- Chatbox Fragment -->
-<div th:replace="~{fragments/chatbox :: chatbox}"></div>
+    <!-- AI Chatbox Assistant -->
+    <div th:replace="~{fragments/chatbox :: chatbox}"></div>
+
+    <!-- Core SaaS Scripts -->
+    <script src="/admin-saas.js"></script>
 </body>
 </html>

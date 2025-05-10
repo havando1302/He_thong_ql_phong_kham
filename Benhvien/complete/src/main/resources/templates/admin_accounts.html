@@ -3,70 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Tài Khoản</title>
-    <link rel="stylesheet" href="/patients.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Quản Lý Tài Khoản | MEDICARE PRO</title>
+    <link rel="stylesheet" href="/admin-saas.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <header class="page-header">
-        <h1><i class="fas fa-users-cog"></i> Quản Lý Tài Khoản</h1>
-        <nav class="breadcrumb">
-            <a href="/dashboard"><i class="fas fa-home"></i> Trang chủ</a> / Admin / Tài khoản
-        </nav>
-    </header>
+    <div class="saas-layout">
+        <!-- Mobile Drawer Backdrop -->
+        <div class="mobile-backdrop"></div>
 
-    <div class="form-actions" style="margin-bottom: 16px;">
-        <a href="/admin/staff" class="btn btn-primary">
-            <i class="fas fa-user-plus"></i> Tạo nhân viên
-        </a>
-        <a href="/dashboard" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Quay lại
-        </a>
-    </div>
+        <!-- Unified Sidebar -->
+        <div th:replace="~{fragments/admin_nav :: sidebar(active='accounts')}"></div>
 
-    <div class="table-section">
-        <h3><i class="fas fa-list"></i> Danh sách tài khoản</h3>
+        <!-- Main Viewport -->
+        <div class="saas-main">
+            <!-- Unified Topbar -->
+            <div th:replace="~{fragments/admin_nav :: topbar(pageTitle='Quản Lý Tài Khoản', active='accounts')}"></div>
 
-        <div class="table-wrapper">
-            <table class="data-table" th:if="${users != null and !users.isEmpty()}">
-                <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Created</th>
-                    <th>Hành động</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="u : ${users}">
-                    <td th:text="${u.username}">user</td>
-                    <td th:text="${u.role}">USER</td>
-                    <td th:text="${u.createdAt}">2026-01-01</td>
-                    <td>
-                        <a class="btn btn-search btn-sm" th:href="@{'/admin/accounts/' + ${u.username}}">
-                            <i class="fas fa-id-card"></i> Hồ sơ
+            <!-- Content Area -->
+            <main class="saas-content">
+                <!-- Page Hero Header -->
+                <div class="page-hero">
+                    <div class="hero-titles">
+                        <h1 class="hero-main-title">
+                            <i class="fas fa-users-cog"></i> Quản Trị Tài Khoản & Phân Quyền
+                        </h1>
+                        <p class="hero-subtitle">
+                            Kiểm soát tài khoản người dùng, nhân viên y tế và cấu hình quyền truy cập hệ thống.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="/admin/staff" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Tạo Tài Khoản Nhân Viên
                         </a>
-                        <form th:if="${u.username != 'admin'}" th:action="@{'/admin/accounts/' + ${u.username} + '/delete'}" method="post" style="display:inline;">
-                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                            <button class="btn btn-reset btn-sm" type="submit" onclick="return confirm('Xóa tài khoản này?');">
-                                <i class="fas fa-trash"></i> Xóa
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    </div>
+                </div>
 
-            <div th:if="${users == null or users.isEmpty()}" class="alert alert-error">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Chưa có tài khoản nào trong hệ thống.</span>
-            </div>
+                <!-- KPI Metric Summary -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Tổng Số Tài Khoản</span>
+                            <span class="kpi-value" th:text="${users != null ? users.size() : '0'}">0</span>
+                            <span class="kpi-trend positive"><i class="fas fa-users"></i> Người dùng đã đăng ký</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-purple">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Cơ Chế Bảo Mật</span>
+                            <span class="kpi-value">RBAC 2026</span>
+                            <span class="kpi-trend positive"><i class="fas fa-shield-halved"></i> Phân quyền 3 cấp</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-green">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Tài Khoản Quản Trị</span>
+                            <span class="kpi-value cell-code">ADMIN</span>
+                            <span class="kpi-trend neutral"><i class="fas fa-crown"></i> Toàn quyền hệ thống</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-blue">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table Section -->
+                <div class="saas-card">
+                    <!-- Table Toolbar -->
+                    <div class="table-toolbar">
+                        <div class="toolbar-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="table-search-input" placeholder="Lọc tài khoản (Username, Role, Ngày tạo)...">
+                        </div>
+
+                        <div class="toolbar-actions">
+                            <a href="/admin/accounts" class="btn btn-outline btn-sm" title="Tải lại danh sách">
+                                <i class="fas fa-rotate"></i> Tải lại
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Table Responsive Container -->
+                    <div class="table-responsive-wrapper">
+                        <table class="saas-table saas-data-table" th:if="${users != null and !users.isEmpty()}">
+                            <thead>
+                                <tr>
+                                    <th>Tên Đăng Nhập</th>
+                                    <th>Vai Trò (Role)</th>
+                                    <th>Mã Bệnh Nhân Liên Kết</th>
+                                    <th>Ngày Tạo</th>
+                                    <th class="no-sort">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="u : ${users}">
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <div class="topbar-user-avatar" style="width:32px; height:32px; font-size:0.8rem;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <strong style="color:var(--text-primary); font-size:0.95rem;" th:text="${u.username}">username</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${u.role == 'ADMIN'}" class="badge badge-purple">
+                                            <span class="badge-dot"></span> ADMIN
+                                        </span>
+                                        <span th:if="${u.role == 'STAFF'}" class="badge badge-info">
+                                            <span class="badge-dot"></span> STAFF
+                                        </span>
+                                        <span th:if="${u.role == 'USER'}" class="badge badge-success">
+                                            <span class="badge-dot"></span> USER
+                                        </span>
+                                        <span th:if="${u.role != 'ADMIN' && u.role != 'STAFF' && u.role != 'USER'}" class="badge badge-warning">
+                                            <span th:text="${u.role}">ROLE</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${u.patientId != null and !u.patientId.isEmpty()}" class="cell-code" th:text="${u.patientId}">P001</span>
+                                        <span th:if="${u.patientId == null or u.patientId.isEmpty()}" style="color:var(--text-muted); font-size:0.85rem;">— Chưa liên kết —</span>
+                                    </td>
+                                    <td>
+                                        <span style="font-family:var(--font-mono); font-size:0.85rem;" th:text="${u.createdAt}">2026-01-01</span>
+                                    </td>
+                                    <td>
+                                        <div class="cell-actions">
+                                            <a class="btn btn-secondary btn-sm" th:href="@{'/admin/accounts/' + ${u.username}}" title="Xem chi tiết và chỉnh sửa">
+                                                <i class="fas fa-id-card"></i> Hồ sơ
+                                            </a>
+                                            <form th:if="${u.username != 'admin'}" th:action="@{'/admin/accounts/' + ${u.username} + '/delete'}" method="post" style="display:inline; margin:0;">
+                                                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                                                <button class="btn btn-ghost-danger btn-sm" type="submit" 
+                                                        onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa tài khoản này?');" title="Xóa tài khoản">
+                                                    <i class="fas fa-trash-can"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Empty State View -->
+                        <div class="empty-state-box table-empty-state" 
+                             th:style="${users == null or users.isEmpty()} ? 'display:flex;' : 'display:none;'">
+                            <div class="empty-state-icon-wrap">
+                                <i class="fas fa-users-slash"></i>
+                            </div>
+                            <h3 class="empty-state-title">Chưa có người dùng nào</h3>
+                            <p class="empty-state-desc">
+                                Danh sách tài khoản người dùng hiện tại đang trống.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Pagination Footer -->
+                    <div class="table-pagination-footer">
+                        <div class="pagination-info">
+                            Hiển thị <strong>1 - 10</strong> trên tổng số <strong th:text="${users != null ? users.size() : 0}">0</strong> bản ghi
+                        </div>
+                        <div class="pagination-controls">
+                            <div class="page-size-selector">
+                                <span>Mỗi trang:</span>
+                                <select class="page-size-select">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="pagination-buttons">
+                                <!-- Populated dynamically by admin-saas.js -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Unified Footer -->
+            <div th:replace="~{fragments/admin_nav :: footer}"></div>
         </div>
     </div>
-</div>
 
-<!-- Chatbox Fragment -->
-<div th:replace="~{fragments/chatbox :: chatbox}"></div>
+    <!-- AI Chatbox Assistant -->
+    <div th:replace="~{fragments/chatbox :: chatbox}"></div>
+
+    <!-- Core SaaS Scripts -->
+    <script src="/admin-saas.js"></script>
 </body>
 </html>

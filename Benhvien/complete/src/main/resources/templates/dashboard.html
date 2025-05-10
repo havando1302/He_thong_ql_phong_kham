@@ -3,165 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Bệnh Viện</title>
-    <link rel="stylesheet" href="/dashboard.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Tổng Quan Hệ Thống | MEDICARE PRO</title>
+    <link rel="stylesheet" href="/admin-saas.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="background-overlay"></div>
-    
-    <div class="dashboard-container">
-        <header class="dashboard-header">
-            <div class="hospital-logo">
-                <i class="fas fa-hospital"></i>
-            </div>
-            <h1 class="main-title">HỆ THỐNG QUẢN LÝ BỆNH VIỆN</h1>
-        </header>
+    <div class="saas-layout">
+        <!-- Mobile Drawer Backdrop -->
+        <div class="mobile-backdrop"></div>
 
-        <div class="main-square-container">
-            <div class="central-square">
-                <!-- Welcome section inside square -->
-                <div class="welcome-inside">
-                    <div class="welcome-message">
-                        <i class="fas fa-user-circle"></i>
-                        <div class="welcome-meta">
-                            <small th:text="'Role: ' + ${role}">Role: USER</small>
-                        </div>
-                        <span>Xin chào, <strong th:text="${username}">Người dùng</strong>!</span>
+        <!-- Unified Sidebar -->
+        <div th:replace="~{fragments/admin_nav :: sidebar(active='dashboard')}"></div>
+
+        <!-- Main Viewport -->
+        <div class="saas-main">
+            <!-- Unified Topbar -->
+            <div th:replace="~{fragments/admin_nav :: topbar(pageTitle='Tổng Quan Hệ Thống', active='dashboard')}"></div>
+
+            <!-- Page Content -->
+            <main class="saas-content">
+                <!-- Hero Header -->
+                <div class="page-hero">
+                    <div class="hero-titles">
+                        <h1 class="hero-main-title">
+                            <i class="fas fa-chart-pie"></i> Bảng Điều Khiển Trung Tâm
+                        </h1>
+                        <p class="hero-subtitle">
+                            Chào mừng trở lại, <strong th:text="${username}">Bác sĩ / Quản trị viên</strong>! 
+                            Hệ thống quản lý phòng khám đã sẵn sàng cho ngày làm việc hôm nay.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="/patients" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Tiếp Nhận Bệnh Nhân
+                        </a>
+                        <a href="/appointments/manage" class="btn btn-secondary">
+                            <i class="fas fa-calendar-check"></i> Duyệt Lịch Khám
+                        </a>
                     </div>
                 </div>
 
-                <!-- Function grid -->
-                <div class="square-grid">
-                    <a href="/patients" class="square-item patients-item">
-                        <i class="fas fa-user-injured"></i>
-                        <span>Bệnh Nhân</span>
-                    </a>
-
-                    <a href="/benhan" class="square-item medical-item">
-                        <i class="fas fa-file-medical"></i>
-                        <span>Bệnh Án</span>
-                    </a>
-
-                    <a href="/schedule" class="square-item schedule-item">
-                        <i class="fas fa-pills"></i>
-                        <span>Lịch Cấp Thuốc</span>
-                    </a>
-
-                    <a href="/room" class="square-item room-item">
-                        <i class="fas fa-hospital-user"></i>
-                        <span>Phòng Điều Trị</span>
-                    </a>
-                    <a href="/appointments/manage" class="square-item schedule-item">
-                        <i class="fas fa-calendar-check"></i>
-                        <span>Lịch Khám</span>
-                    </a>
-                    <a th:if="${#strings.equalsIgnoreCase(role,'ADMIN') or #strings.equalsIgnoreCase(username,'admin')}" href="/admin/accounts" class="square-item medical-item" style="display:none">
-                        <i class="fas fa-users-cog"></i>
-                        <span>Quản lý User</span>
-                    </a>
+                <!-- Error / Access Denied Notification -->
+                <div th:if="${error}" class="saas-alert alert-error">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="saas-alert-content">
+                        <strong>Thông báo quyền truy cập:</strong>
+                        <span th:text="${error}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
                 </div>
 
-                <div th:if="${#strings.equalsIgnoreCase(role,'ADMIN') or #strings.equalsIgnoreCase(username,'admin')}" class="admin-actions">
-                    <a href="/admin/accounts" class="admin-action-link admin-accounts">
-                        <i class="fas fa-users-cog"></i>
-                        <span style="margin-left:8px;">Quản lý tài khoản</span>
-                    </a>
-                    <a href="/admin/staff" class="admin-action-link admin-staff">
-                        <i class="fas fa-user-plus"></i>
-                        <span style="margin-left:8px;">Tạo nhân viên</span>
-                    </a>
-                </div>
-
-                <!-- Time info inside square -->
-                <div class="time-inside">
-                    <div class="time-info">
-                        <div class="stat-item">
-                            <i class="fas fa-clock"></i>
-                            <span class="current-time" id="currentTime"></span>
+                <!-- KPI Metric Cards Grid -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Tổng Bệnh Nhân</span>
+                            <span class="kpi-value" th:text="${patientCount != null ? patientCount : '0'}">0</span>
+                            <span class="kpi-trend positive">
+                                <i class="fas fa-arrow-up"></i> Đang theo dõi hồ sơ
+                            </span>
                         </div>
-                        <div class="stat-item">
-                            <i class="fas fa-calendar-day"></i>
-                            <span class="current-date" id="currentDate"></span>
+                        <div class="kpi-icon-wrap kpi-icon-blue">
+                            <i class="fas fa-user-injured"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Hồ Sơ Bệnh Án</span>
+                            <span class="kpi-value" th:text="${benhanCount != null ? benhanCount : '0'}">0</span>
+                            <span class="kpi-trend positive">
+                                <i class="fas fa-file-medical-alt"></i> Hồ sơ hoàn tất
+                            </span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-green">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Phòng Điều Trị</span>
+                            <span class="kpi-value" th:text="${roomCount != null ? roomCount : '0'}">0</span>
+                            <span class="kpi-trend neutral">
+                                <i class="fas fa-stethoscope"></i> Có bác sĩ phụ trách
+                            </span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-amber">
+                            <i class="fas fa-hospital-user"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Lịch Cấp Thuốc</span>
+                            <span class="kpi-value" th:text="${scheduleCount != null ? scheduleCount : '0'}">0</span>
+                            <span class="kpi-trend positive">
+                                <i class="fas fa-pills"></i> Lộ trình thuốc
+                            </span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-purple">
+                            <i class="fas fa-prescription-bottle-alt"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Lịch Hẹn Khám</span>
+                            <span class="kpi-value" th:text="${appointmentCount != null ? appointmentCount : '0'}">0</span>
+                            <span class="kpi-trend positive">
+                                <i class="fas fa-calendar-alt"></i> Đặt khám trực tuyến
+                            </span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-blue">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card" th:if="${#strings.equalsIgnoreCase(role,'ADMIN') or #strings.equalsIgnoreCase(username,'admin')}">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Tài Khoản Hệ Thống</span>
+                            <span class="kpi-value" th:text="${userCount != null ? userCount : '0'}">0</span>
+                            <span class="kpi-trend neutral">
+                                <i class="fas fa-shield-alt"></i> Phân quyền an toàn
+                            </span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-purple">
+                            <i class="fas fa-users-cog"></i>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Dashboard Layout 2 Columns -->
+                <div class="dashboard-grid">
+                    <!-- Left: Quick Navigation & Services -->
+                    <div class="saas-card">
+                        <div class="saas-card-header">
+                            <div class="card-header-left">
+                                <h2 class="card-title">
+                                    <i class="fas fa-layer-group"></i> Phân Hệ Quản Lý Phòng Khám
+                                </h2>
+                            </div>
+                            <span class="card-subtitle">Truy cập tức thì các module chuyên môn</span>
+                        </div>
+                        <div class="saas-card-body">
+                            <div class="quick-action-grid">
+                                <a href="/patients" class="quick-action-card">
+                                    <div class="quick-action-icon">
+                                        <i class="fas fa-user-injured"></i>
+                                    </div>
+                                    <span class="quick-action-title">Bệnh Nhân</span>
+                                    <span class="quick-action-desc">Quản lý hồ sơ, thông tin liên lạc và lịch sử tiếp nhận</span>
+                                </a>
+
+                                <a href="/benhan" class="quick-action-card">
+                                    <div class="quick-action-icon">
+                                        <i class="fas fa-file-medical"></i>
+                                    </div>
+                                    <span class="quick-action-title">Bệnh Án</span>
+                                    <span class="quick-action-desc">Triệu chứng, tiền sử bệnh lý và chẩn đoán điều trị</span>
+                                </a>
+
+                                <a href="/room" class="quick-action-card">
+                                    <div class="quick-action-icon">
+                                        <i class="fas fa-hospital-user"></i>
+                                    </div>
+                                    <span class="quick-action-title">Phòng Điều Trị</span>
+                                    <span class="quick-action-desc">Theo dõi phòng bệnh và bác sĩ phụ trách trực ban</span>
+                                </a>
+
+                                <a href="/schedule" class="quick-action-card">
+                                    <div class="quick-action-icon">
+                                        <i class="fas fa-pills"></i>
+                                    </div>
+                                    <span class="quick-action-title">Lịch Cấp Thuốc</span>
+                                    <span class="quick-action-desc">Kê đơn, số lượng, lịch uống và thời gian cấp phát</span>
+                                </a>
+
+                                <a href="/appointments/manage" class="quick-action-card">
+                                    <div class="quick-action-icon">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <span class="quick-action-title">Lịch Khám</span>
+                                    <span class="quick-action-desc">Tiếp nhận, xác nhận hoặc hủy các yêu cầu đặt lịch hẹn</span>
+                                </a>
+
+                                <a th:if="${#strings.equalsIgnoreCase(role,'ADMIN') or #strings.equalsIgnoreCase(username,'admin')}" 
+                                   href="/admin/accounts" class="quick-action-card">
+                                    <div class="quick-action-icon">
+                                        <i class="fas fa-users-cog"></i>
+                                    </div>
+                                    <span class="quick-action-title">Quản Lý User</span>
+                                    <span class="quick-action-desc">Phân quyền tài khoản ADMIN, STAFF và liên kết bệnh nhân</span>
+                                </a>
+
+                                <a th:if="${#strings.equalsIgnoreCase(role,'ADMIN') or #strings.equalsIgnoreCase(username,'admin')}" 
+                                   href="/admin/staff" class="quick-action-card">
+                                    <div class="quick-action-icon">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <span class="quick-action-title">Tạo Nhân Viên</span>
+                                    <span class="quick-action-desc">Cấp mới tài khoản truy cập dành riêng cho nhân viên y tế</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Clinic Operations & System Status -->
+                    <div class="saas-card">
+                        <div class="saas-card-header">
+                            <div class="card-header-left">
+                                <h2 class="card-title">
+                                    <i class="fas fa-shield-heart"></i> Trạng Thái Vận Hành
+                                </h2>
+                            </div>
+                            <span class="badge badge-success"><span class="badge-dot"></span> Sẵn sàng</span>
+                        </div>
+                        <div class="saas-card-body">
+                            <div class="status-list">
+                                <div class="status-item">
+                                    <div class="status-item-left">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Giờ làm việc phòng khám</span>
+                                    </div>
+                                    <strong style="color:var(--text-primary);">07:30 - 20:00</strong>
+                                </div>
+
+                                <div class="status-item">
+                                    <div class="status-item-left">
+                                        <i class="fas fa-robot"></i>
+                                        <span>Trợ lý AI Groq</span>
+                                    </div>
+                                    <span class="badge badge-info"><span class="badge-dot"></span> Hoạt động</span>
+                                </div>
+
+                                <div class="status-item">
+                                    <div class="status-item-left">
+                                        <i class="fas fa-database"></i>
+                                        <span>Cơ sở dữ liệu MySQL</span>
+                                    </div>
+                                    <span class="badge badge-success"><span class="badge-dot"></span> Kết nối tốt</span>
+                                </div>
+
+                                <div class="status-item">
+                                    <div class="status-item-left">
+                                        <i class="fas fa-user-tag"></i>
+                                        <span>Vai trò hiện tại</span>
+                                    </div>
+                                    <span class="badge badge-purple" th:text="${role != null ? role : 'ADMIN'}">ADMIN</span>
+                                </div>
+
+                                <div class="status-item">
+                                    <div class="status-item-left">
+                                        <i class="fas fa-lock"></i>
+                                        <span>Bảo mật CSRF</span>
+                                    </div>
+                                    <span class="badge badge-success"><i class="fas fa-check"></i> Đang bật</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 24px; padding: 16px; border-radius: var(--radius-md); background: var(--bg-subtle); border: 1px dashed var(--border-default);">
+                                <h4 style="font-size: 0.88rem; font-weight: 700; margin-bottom: 6px; display:flex; align-items:center; gap:8px;">
+                                    <i class="fas fa-lightbulb" style="color:var(--warning-solid);"></i> Mẹo tối ưu thao tác
+                                </h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+                                    Bạn có thể click vào bất kỳ tiêu đề cột bảng dữ liệu để sắp xếp tăng/giảm dần, hoặc dùng ô tìm kiếm nhanh để lọc tức thời trên màn hình.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Unified Footer -->
+            <div th:replace="~{fragments/admin_nav :: footer}"></div>
         </div>
-
-        <footer class="dashboard-footer">
-            <a href="/logout" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Đăng Xuất</span>
-            </a>
-        </footer>
     </div>
 
-    <script>
-        // Animation cho square items khi load trang
-        document.addEventListener('DOMContentLoaded', function() {
-            const squareItems = document.querySelectorAll('.square-item');
-            squareItems.forEach((item, index) => {
-                item.style.animationDelay = `${index * 0.1}s`;
-                item.classList.add('fade-in-up');
-            });
-
-            // Cập nhật thời gian thực
-            function updateDateTime() {
-                const now = new Date();
-                const timeElement = document.getElementById('currentTime');
-                const dateElement = document.getElementById('currentDate');
-                
-                if (timeElement) {
-                    timeElement.textContent = now.toLocaleTimeString('vi-VN');
-                }
-                
-                if (dateElement) {
-                    dateElement.textContent = now.toLocaleDateString('vi-VN', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                }
-            }
-
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-
-            // Particle effect cho background
-            createParticles();
-        });
-
-        // Tạo hiệu ứng particles
-        function createParticles() {
-            const particlesContainer = document.createElement('div');
-            particlesContainer.className = 'particles';
-            document.body.appendChild(particlesContainer);
-
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                particlesContainer.appendChild(particle);
-            }
-        }
-
-        // Hover effects cho square items
-        document.querySelectorAll('.square-item').forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.08)';
-            });
-            
-            item.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(-5px) scale(1.05)';
-            });
-        });
-    </script>
-
-    <!-- Chatbox Fragment -->
+    <!-- AI Chatbox Assistant -->
     <div th:replace="~{fragments/chatbox :: chatbox}"></div>
+
+    <!-- Core SaaS Scripts -->
+    <script src="/admin-saas.js"></script>
 </body>
 </html>

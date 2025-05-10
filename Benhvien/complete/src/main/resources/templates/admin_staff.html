@@ -3,65 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo Tài Khoản Nhân Viên</title>
-    <link rel="stylesheet" href="/patients.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Tạo Tài Khoản Nhân Viên | MEDICARE PRO</title>
+    <link rel="stylesheet" href="/admin-saas.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <header class="page-header">
-        <h1><i class="fas fa-user-shield"></i> Tạo Tài Khoản Nhân Viên</h1>
-        <nav class="breadcrumb">
-            <a href="/dashboard"><i class="fas fa-home"></i> Trang chủ</a> / Admin / Nhân viên
-        </nav>
-    </header>
+    <div class="saas-layout">
+        <!-- Mobile Drawer Backdrop -->
+        <div class="mobile-backdrop"></div>
 
-    <div th:if="${errorMessage}" class="alert alert-error">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span th:text="${errorMessage}"></span>
+        <!-- Unified Sidebar -->
+        <div th:replace="~{fragments/admin_nav :: sidebar(active='staff')}"></div>
+
+        <!-- Main Viewport -->
+        <div class="saas-main">
+            <!-- Unified Topbar -->
+            <div th:replace="~{fragments/admin_nav :: topbar(pageTitle='Tạo Nhân Viên', active='staff')}"></div>
+
+            <!-- Content Area -->
+            <main class="saas-content">
+                <!-- Page Hero Header -->
+                <div class="page-hero">
+                    <div class="hero-titles">
+                        <h1 class="hero-main-title">
+                            <i class="fas fa-user-plus"></i> Cấp Mới Tài Khoản Nhân Viên Y Tế
+                        </h1>
+                        <p class="hero-subtitle">
+                            Tài khoản nhân viên có vai trò STAFF, được phép quản lý hồ sơ bệnh nhân, lập bệnh án và quản lý lịch cấp thuốc.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="/admin/accounts" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Danh Sách Tài Khoản
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Notifications / Alerts -->
+                <div th:if="${errorMessage}" class="saas-alert alert-error">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="saas-alert-content">
+                        <strong>Lỗi:</strong> <span th:text="${errorMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
+                
+                <div th:if="${successMessage}" class="saas-alert alert-success">
+                    <i class="fas fa-circle-check"></i>
+                    <div class="saas-alert-content">
+                        <strong>Thành công:</strong> <span th:text="${successMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
+
+                <!-- Create Staff Form Card -->
+                <div class="saas-card" style="max-width: 760px; margin: 0 auto;">
+                    <div class="saas-card-header">
+                        <div class="card-header-left">
+                            <h2 class="card-title">
+                                <i class="fas fa-id-card-clip"></i> Thông Tin Tài Khoản Mới
+                            </h2>
+                        </div>
+                        <span class="badge badge-info"><span class="badge-dot"></span> Vai trò: STAFF</span>
+                    </div>
+
+                    <div class="saas-card-body">
+                        <form action="/admin/staff" method="post" id="createStaffForm">
+                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+
+                            <div class="form-grid" style="grid-template-columns: 1fr;">
+                                <div class="form-group">
+                                    <label class="form-label" for="username">Tên Đăng Nhập (Username): <span class="required">*</span></label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-user"></i>
+                                        <input type="text" id="username" name="username" class="form-control" 
+                                               required placeholder="Ví dụ: bacsi_tuan, yta_lan..." autofocus>
+                                    </div>
+                                    <span class="form-hint">Viết liền không dấu, có thể dùng số và dấu gạch dưới</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="password">Mật Khẩu Ban Đầu: <span class="required">*</span></label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-lock"></i>
+                                        <input type="password" id="password" name="password" class="form-control" 
+                                               required placeholder="Tối thiểu 6 ký tự">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="confirmPassword">Xác Nhận Mật Khẩu: <span class="required">*</span></label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-check-double"></i>
+                                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" 
+                                               required placeholder="Nhập lại mật khẩu ban đầu">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:20px; padding:16px; border-radius:var(--radius-md); background:var(--bg-subtle); border:1px solid var(--border-default);">
+                                <h4 style="font-size:0.86rem; font-weight:700; margin-bottom:6px; color:var(--text-primary);">
+                                    <i class="fas fa-shield-alt" style="color:var(--primary-600);"></i> Quyền Hạn Nhân Viên (STAFF):
+                                </h4>
+                                <ul style="font-size:0.8rem; color:var(--text-secondary); margin-left:20px; line-height:1.6;">
+                                    <li>Được phép thêm, sửa, xem hồ sơ Bệnh Nhân và Bệnh Án.</li>
+                                    <li>Được phép quản lý Lịch Cấp Thuốc và duyệt Lịch Khám.</li>
+                                    <li>Không có quyền truy cập module Quản Lý User và Tạo Nhân Viên (Dành riêng cho ADMIN).</li>
+                                </ul>
+                            </div>
+
+                            <div class="form-actions-row" style="margin-top:24px;">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-user-plus"></i> Tạo Tài Khoản Nhân Viên
+                                </button>
+                                <a href="/admin/accounts" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-xmark"></i> Hủy Bỏ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Unified Footer -->
+            <div th:replace="~{fragments/admin_nav :: footer}"></div>
+        </div>
     </div>
 
-    <div th:if="${successMessage}" class="alert alert-success">
-        <i class="fas fa-check-circle"></i>
-        <span th:text="${successMessage}"></span>
-    </div>
+    <!-- AI Chatbox Assistant -->
+    <div th:replace="~{fragments/chatbox :: chatbox}"></div>
 
-    <div class="form-section">
-        <h2><i class="fas fa-user-plus"></i> Thêm nhân viên mới</h2>
-
-        <form action="/admin/staff" method="post" class="patient-form">
-            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="username">Username <span class="required">*</span></label>
-                    <input id="username" name="username" class="form-control" required placeholder="vd: nv01">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="password">Mật khẩu <span class="required">*</span></label>
-                    <input id="password" type="password" name="password" class="form-control" required placeholder="ít nhất 6 ký tự">
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Xác nhận mật khẩu <span class="required">*</span></label>
-                    <input id="confirmPassword" type="password" name="confirmPassword" class="form-control" required>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Tạo tài khoản
-                </button>
-                <a href="/dashboard" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Quay lại
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Chatbox Fragment -->
-<div th:replace="~{fragments/chatbox :: chatbox}"></div>
+    <!-- Core SaaS Scripts -->
+    <script src="/admin-saas.js"></script>
 </body>
 </html>

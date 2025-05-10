@@ -2,6 +2,11 @@ package com.example.servingwebcontent.Controller;
 
 import com.example.servingwebcontent.Model.Role;
 import com.example.servingwebcontent.Model.User;
+import com.example.servingwebcontent.database.AppointmentDatabase;
+import com.example.servingwebcontent.database.BenhanDatabase;
+import com.example.servingwebcontent.database.PatientDatabase;
+import com.example.servingwebcontent.database.RoomDatabase;
+import com.example.servingwebcontent.database.ScheduleDatabase;
 import com.example.servingwebcontent.database.UserDatabase;
 import com.example.servingwebcontent.security.AuthConstants;
 import jakarta.servlet.http.HttpSession;
@@ -137,6 +142,38 @@ public class LoginController {
         if (denied != null) {
             model.addAttribute("error", "Ban khong co quyen truy cap chuc nang nay.");
         }
+
+        int patientCount = 0;
+        int benhanCount = 0;
+        int roomCount = 0;
+        int scheduleCount = 0;
+        int appointmentCount = 0;
+        int userCount = 0;
+        try {
+            patientCount = new PatientDatabase().getPatientList().size();
+        } catch (Exception ignored) {}
+        try {
+            benhanCount = new BenhanDatabase().getBenhanList().size();
+        } catch (Exception ignored) {}
+        try {
+            roomCount = new RoomDatabase().getRoomCount();
+        } catch (Exception ignored) {}
+        try {
+            scheduleCount = new ScheduleDatabase().getScheduleList().size();
+        } catch (Exception ignored) {}
+        try {
+            appointmentCount = new AppointmentDatabase().getAllAppointments().size();
+        } catch (Exception ignored) {}
+        try {
+            userCount = new UserDatabase().listUserProfiles().size();
+        } catch (Exception ignored) {}
+
+        model.addAttribute("patientCount", patientCount);
+        model.addAttribute("benhanCount", benhanCount);
+        model.addAttribute("roomCount", roomCount);
+        model.addAttribute("scheduleCount", scheduleCount);
+        model.addAttribute("appointmentCount", appointmentCount);
+        model.addAttribute("userCount", userCount);
 
         return "dashboard";
     }

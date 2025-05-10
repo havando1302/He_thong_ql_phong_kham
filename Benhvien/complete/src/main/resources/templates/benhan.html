@@ -3,325 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Bệnh Án</title>
-    <link rel="stylesheet" href="/benhan.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Quản Lý Bệnh Án | MEDICARE PRO</title>
+    <link rel="stylesheet" href="/admin-saas.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="page-header">
-            <h1><i class="fas fa-file-medical"></i> Quản Lý Bệnh Án</h1>
-            <nav class="breadcrumb">
-                <a href="/dashboard"><i class="fas fa-home"></i> Trang chủ</a> / Bệnh án
-            </nav>
-        </header>
+    <div class="saas-layout">
+        <!-- Mobile Drawer Backdrop -->
+        <div class="mobile-backdrop"></div>
 
-        <!-- Thông báo lỗi/thành công -->
-        <div th:if="${errorMessage}" class="alert alert-error">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span th:text="${errorMessage}"></span>
-        </div>
-        
-        <div th:if="${successMessage}" class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            <span th:text="${successMessage}"></span>
-        </div>
+        <!-- Unified Sidebar -->
+        <div th:replace="~{fragments/admin_nav :: sidebar(active='benhan')}"></div>
 
-        <!-- Form thêm/sửa bệnh án -->
-        <div class="form-section">
-            <h2 th:if="${editBenhan == null}">
-                <i class="fas fa-plus-circle"></i> Thêm Bệnh Án Mới
-            </h2>
-            <h2 th:if="${editBenhan != null}">
-                <i class="fas fa-edit"></i> Chỉnh Sửa Bệnh Án
-            </h2>
-            
-            <!-- Form sửa bệnh án -->
-            <form th:if="${editBenhan != null}" action="/benhan/update" method="post" class="benhan-form">
-                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                <input type="hidden" name="id" th:value="${editBenhan.id}">
+        <!-- Main Viewport -->
+        <div class="saas-main">
+            <!-- Unified Topbar -->
+            <div th:replace="~{fragments/admin_nav :: topbar(pageTitle='Quản Lý Bệnh Án', active='benhan')}"></div>
+
+            <!-- Content Area -->
+            <main class="saas-content">
+                <!-- Page Hero Header -->
+                <div class="page-hero">
+                    <div class="hero-titles">
+                        <h1 class="hero-main-title">
+                            <i class="fas fa-file-medical"></i> Quản Lý Hồ Sơ Bệnh Án
+                        </h1>
+                        <p class="hero-subtitle">
+                            Theo dõi quá trình thăm khám, triệu chứng lâm sàng, chẩn đoán và phân phòng điều trị.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <button type="button" class="btn btn-primary" onclick="toggleCollapse('benhanFormCard')">
+                            <i class="fas fa-plus-circle"></i> 
+                            <span th:text="${editBenhan == null ? 'Lập Bệnh Án Mới' : 'Đang Sửa Bệnh Án'}">Lập Bệnh Án Mới</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notifications / Alerts -->
+                <div th:if="${errorMessage}" class="saas-alert alert-error">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <div class="saas-alert-content">
+                        <strong>Lỗi:</strong> <span th:text="${errorMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="edit-patientId">Bệnh Nhân: <span class="required">*</span></label>
-                        <select id="edit-patientId" name="patientId" class="form-control" required>
-                            <option value="">-- Chọn bệnh nhân --</option>
-                            <option th:each="patient : ${patients}" 
-                                    th:value="${patient.id}" 
-                                    th:text="${patient.id + ' - ' + patient.name}"
-                                    th:selected="${patient.id == editBenhan.patientId}">P001 - Nguyen Van A</option>
-                        </select>
+                <div th:if="${successMessage}" class="saas-alert alert-success">
+                    <i class="fas fa-circle-check"></i>
+                    <div class="saas-alert-content">
+                        <strong>Thành công:</strong> <span th:text="${successMessage}"></span>
+                    </div>
+                    <button type="button" class="saas-alert-close">&times;</button>
+                </div>
+
+                <!-- KPI Metric Summary -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Tổng Bệnh Án</span>
+                            <span class="kpi-value" th:text="${benhans != null ? benhans.size() : '0'}">0</span>
+                            <span class="kpi-trend positive"><i class="fas fa-notes-medical"></i> Lịch sử khám bệnh</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-blue">
+                            <i class="fas fa-file-waveform"></i>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="edit-ngayKham">Ngày Khám: <span class="required">*</span></label>
-                        <input type="date" 
-                               id="edit-ngayKham" 
-                               name="ngayKham" 
-                               class="form-control" 
-                               th:value="${#dates.format(editBenhan.ngayKham.time, 'yyyy-MM-dd')}" 
-                               required>
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Mã Bệnh Án Mới</span>
+                            <span class="kpi-value cell-code" th:text="${nextBenhanId != null ? nextBenhanId : 'BA001'}">BA001</span>
+                            <span class="kpi-trend neutral"><i class="fas fa-barcode"></i> Tự động cấp</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-green">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-data">
+                            <span class="kpi-label">Bệnh Nhân Đã Liên Kết</span>
+                            <span class="kpi-value" th:text="${patients != null ? patients.size() : '0'}">0</span>
+                            <span class="kpi-trend positive"><i class="fas fa-hospital-user"></i> Trong danh mục</span>
+                        </div>
+                        <div class="kpi-icon-wrap kpi-icon-purple">
+                            <i class="fas fa-users-viewfinder"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="edit-trieuChung">Triệu Chứng: <span class="required">*</span></label>
-                        <input type="text" 
-                               id="edit-trieuChung" 
-                               name="trieuChung" 
-                               class="form-control" 
-                               th:value="${editBenhan.trieuChung}" 
-                               placeholder="Nhập triệu chứng" 
-                               required>
+                <!-- Benh An Form Card (Add / Edit) -->
+                <div class="saas-card" id="benhanFormCard" th:style="${editBenhan != null ? 'display:block;' : ''}">
+                    <div class="saas-card-header">
+                        <div class="card-header-left">
+                            <h2 class="card-title">
+                                <i th:class="${editBenhan == null ? 'fas fa-plus-circle' : 'fas fa-pen-to-square'}"></i>
+                                <span th:text="${editBenhan == null ? 'Lập Bệnh Án Mới' : 'Cập Nhật Bệnh Án: ' + editBenhan.id}">Lập Bệnh Án Mới</span>
+                            </h2>
+                        </div>
+                        <span class="card-subtitle">Nhập thông tin chuyên môn khám bệnh</span>
                     </div>
 
-                    <div class="form-group">
-                        <label for="edit-tienSuBenh">Tiền Sử Bệnh: <span class="required">*</span></label>
-                        <input type="text" 
-                               id="edit-tienSuBenh" 
-                               name="tienSuBenh" 
-                               class="form-control" 
-                               th:value="${editBenhan.tienSuBenh}" 
-                               placeholder="Nhập tiền sử bệnh" 
-                               required>
-                    </div>
-                </div>
+                    <div class="saas-card-body">
+                        <form th:action="${editBenhan == null} ? @{/benhan} : @{/benhan/update}" method="post">
+                            <input type="hidden" name="_csrf" th:value="${csrfToken}" />
+                            <input th:if="${editBenhan != null}" type="hidden" name="id" th:value="${editBenhan.id}" />
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="edit-chanDoan">Chẩn Đoán: <span class="required">*</span></label>
-                        <input type="text" id="edit-chanDoan" name="chanDoan" class="form-control" th:value="${editBenhan.chanDoan}" placeholder="Nhập chẩn đoán" required>
-                    </div>
+                            <div class="form-grid">
+                                <div class="form-group" th:if="${editBenhan == null}">
+                                    <label class="form-label" for="id">Mã Bệnh Án:</label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-barcode"></i>
+                                        <input type="text" id="id" name="id" class="form-control readonly" 
+                                               th:value="${nextBenhanId}" readonly>
+                                    </div>
+                                </div>
 
-                    <div class="form-group">
-                        <label for="edit-roomId">Phòng Điều Trị: <span class="required">*</span></label>
-                        <select id="edit-roomId" name="roomId" class="form-control" required>
-                            <option value="">-- Chọn phòng điều trị --</option>
-                            <option th:each="room : ${rooms}" 
-                                    th:value="${room.id}" 
-                                    th:text="${room.id + ' - ' + room.name}"
-                                    th:selected="${room.id == editBenhan.roomId}">R001 - Phong A</option>
-                        </select>
-                    </div>
-                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="patientId">Bệnh Nhân: <span class="required">*</span></label>
+                                    <select id="patientId" name="patientId" class="form-control" required>
+                                        <option value="">-- Chọn bệnh nhân --</option>
+                                        <option th:each="patient : ${patients}" 
+                                                th:value="${patient.id}" 
+                                                th:text="${patient.id + ' - ' + patient.name}"
+                                                th:selected="${editBenhan != null && patient.id == editBenhan.patientId}">
+                                        </option>
+                                    </select>
+                                </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Cập Nhật
-                    </button>
-                    <a href="/benhan" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Hủy
-                    </a>
-                </div>
-            </form>
+                                <div class="form-group">
+                                    <label class="form-label" for="ngayKham">Ngày Khám: <span class="required">*</span></label>
+                                    <div class="input-icon-wrap">
+                                        <i class="fas fa-calendar-day"></i>
+                                        <input type="date" id="ngayKham" name="ngayKham" class="form-control" 
+                                               th:value="${editBenhan != null} ? ${#dates.format(editBenhan.ngayKham.time, 'yyyy-MM-dd')} : ''" 
+                                               required>
+                                    </div>
+                                </div>
 
-            <!-- Form thêm bệnh án -->
-            <form th:if="${editBenhan == null}" action="/benhan" method="post" class="benhan-form">
-                <input type="hidden" name="_csrf" th:value="${csrfToken}" />
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="id">Mã Bệnh Án:</label>
-                        <input type="text" 
-                               id="id" 
-                               name="id" 
-                               class="form-control readonly" 
-                               th:value="${nextBenhanId}" 
-                               readonly>
-                    </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="roomId">Phòng Điều Trị: <span class="required">*</span></label>
+                                    <select id="roomId" name="roomId" class="form-control" required>
+                                        <option value="">-- Chọn phòng điều trị --</option>
+                                        <option th:each="room : ${rooms}" 
+                                                th:value="${room.id}" 
+                                                th:text="${room.id + ' - ' + room.name + ' (BS: ' + room.doctorName + ')'}"
+                                                th:selected="${editBenhan != null && room.id == editBenhan.roomId}">
+                                        </option>
+                                    </select>
+                                </div>
 
-                    <div class="form-group">
-                        <label for="patientId">Bệnh Nhân: <span class="required">*</span></label>
-                        <select id="patientId" name="patientId" class="form-control" required>
-                            <option value="">-- Chọn bệnh nhân --</option>
-                            <option th:each="patient : ${patients}" 
-                                    th:value="${patient.id}" 
-                                    th:text="${patient.id + ' - ' + patient.name}">P001 - Nguyen Van A</option>
-                        </select>
-                    </div>
-                </div>
+                                <div class="form-group col-span-full">
+                                    <label class="form-label" for="trieuChung">Triệu Chứng Lâm Sàng: <span class="required">*</span></label>
+                                    <input type="text" id="trieuChung" name="trieuChung" class="form-control" 
+                                           th:value="${editBenhan != null} ? ${editBenhan.trieuChung} : ''" 
+                                           placeholder="Ví dụ: Đau đầu, sốt nhẹ 38.5 độ, ho khan kéo dài..." required>
+                                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="ngayKham">Ngày Khám: <span class="required">*</span></label>
-                        <input type="date" 
-                               id="ngayKham" 
-                               name="ngayKham" 
-                               class="form-control" 
-                               required>
-                    </div>
+                                <div class="form-group col-span-full">
+                                    <label class="form-label" for="tienSuBenh">Tiền Sử Bệnh Lý: <span class="required">*</span></label>
+                                    <input type="text" id="tienSuBenh" name="tienSuBenh" class="form-control" 
+                                           th:value="${editBenhan != null} ? ${editBenhan.tienSuBenh} : ''" 
+                                           placeholder="Ví dụ: Viêm xoang mãn tính, dị ứng kháng sinh Penicillin..." required>
+                                </div>
 
-                    <div class="form-group">
-                        <label for="trieuChung">Triệu Chứng: <span class="required">*</span></label>
-                        <input type="text" 
-                               id="trieuChung" 
-                               name="trieuChung" 
-                               class="form-control" 
-                               placeholder="Nhập triệu chứng" 
-                               required>
-                    </div>
-                </div>
+                                <div class="form-group col-span-full">
+                                    <label class="form-label" for="chanDoan">Chẩn Đoán Y Khoa: <span class="required">*</span></label>
+                                    <input type="text" id="chanDoan" name="chanDoan" class="form-control" 
+                                           th:value="${editBenhan != null} ? ${editBenhan.chanDoan} : ''" 
+                                           placeholder="Ví dụ: Viêm phế quản cấp tính mức độ nhẹ..." required>
+                                </div>
+                            </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="tienSuBenh">Tiền Sử Bệnh: <span class="required">*</span></label>
-                        <input type="text" 
-                               id="tienSuBenh" 
-                               name="tienSuBenh" 
-                               class="form-control" 
-                               placeholder="Nhập tiền sử bệnh" 
-                               required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="chanDoan">Chẩn Đoán: <span class="required">*</span></label>
-                        <input type="text" 
-                               id="chanDoan" 
-                               name="chanDoan" 
-                               class="form-control" 
-                               placeholder="Nhập chẩn đoán" 
-                               required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="roomId">Phòng Điều Trị: <span class="required">*</span></label>
-                        <select id="roomId" name="roomId" class="form-control" required>
-                            <option value="">-- Chọn phòng điều trị --</option>
-                            <option th:each="room : ${rooms}" 
-                                    th:value="${room.id}" 
-                                    th:text="${room.id + ' - ' + room.name}">R001 - Phong A</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Thêm Bệnh Án
-                    </button>
-                </div>
-            </form>
-        </div>
-        <div class="search-section">
-            <h3><i class="fas fa-search"></i> Tìm Kiếm Bệnh Án</h3>
-            <form action="/benhan" method="get" class="search-form">
-                <div class="search-row">
-                    <input type="text" 
-                           name="search" 
-                           class="form-control search-input" 
-                           th:value="${search}"
-                           placeholder="Tìm theo mã BA, mã BN, triệu chứng, chẩn đoán...">
-                    <button type="submit" class="btn btn-search">
-                        <i class="fas fa-search"></i> Tìm kiếm
-                    </button>
-                    <a href="/benhan" class="btn btn-reset">
-                        <i class="fas fa-undo"></i> Làm mới
-                    </a>
-                </div>
-            </form>
-        </div>
-
-        <!-- Bảng hiển thị danh sách bệnh án -->
-        <div class="table-section">
-            <h3>
-                <i class="fas fa-list"></i> Danh Sách Bệnh Án
-                <span class="record-count" th:if="${benhans != null}">
-                    (Tổng: <span th:text="${benhans.size()}"></span> bệnh án)
-                </span>
-            </h3>
-            
-            <div class="table-wrapper">
-                <table class="data-table" th:if="${benhans != null and !benhans.isEmpty()}">
-                    <thead>
-                        <tr>
-                            <th>Mã Bệnh Án</th>
-                            <th>Mã Bệnh Nhân</th>
-                            <th>Ngày Khám</th>
-                            <th>Triệu Chứng</th>
-                            <th>Tiền Sử Bệnh</th>
-                            <th>Chẩn Đoán</th>
-                            <th>Mã Phòng</th>
-                            <th>Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="b : ${benhans}">
-                            <td th:text="${b.id}" class="id-cell"></td>
-                            <td th:text="${b.patientId}" class="patient-id"></td>
-                            <td th:text="${#dates.format(b.ngayKham.time, 'dd/MM/yyyy')}" class="date-cell"></td>
-                            <td th:text="${#strings.abbreviate(b.trieuChung, 30)}" 
-                                class="symptom-cell" 
-                                th:title="${b.trieuChung}"></td>
-                            <td th:text="${#strings.abbreviate(b.tienSuBenh, 30)}" 
-                                class="history-cell" 
-                                th:title="${b.tienSuBenh}"></td>
-                            <td th:text="${#strings.abbreviate(b.chanDoan, 30)}" 
-                                class="diagnosis-cell" 
-                                th:title="${b.chanDoan}"></td>
-                            <td th:text="${b.roomId}" class="room-cell"></td>
-                            <td class="action-cell">
-                                <a th:href="@{/benhan/edit/{id}(id=${b.id}, search=${search})}" 
-                                   class="btn btn-edit" title="Chỉnh sửa">
-                                    <i class="fas fa-edit"></i>
+                            <div class="form-actions-row" style="margin-top:20px;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> 
+                                    <span th:text="${editBenhan == null ? 'Lưu Bệnh Án' : 'Cập Nhật Bệnh Án'}">Lưu Bệnh Án</span>
+                                </button>
+                                <a th:if="${editBenhan != null}" href="/benhan" class="btn btn-secondary">
+                                    <i class="fas fa-xmark"></i> Hủy Chỉnh Sửa
                                 </a>
-                                <a th:href="@{/benhan/delete/{id}(id=${b.id}, search=${search})}" 
-                                   class="btn btn-delete" 
-                                   title="Xóa"
-                                   onclick="return confirm('Bạn có chắc chắn muốn xóa bệnh án này?')">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div th:if="${benhans == null or benhans.isEmpty()}" class="no-data">
-                    <i class="fas fa-info-circle"></i>
-                    <p>Không có bệnh án nào được tìm thấy</p>
-                    <span th:if="${search != null and !search.isEmpty()}" 
-                          th:text="'Từ khóa tìm kiếm: ' + ${search}"></span>
+                                <button type="button" class="btn btn-ghost" onclick="toggleCollapse('benhanFormCard')">
+                                    <i class="fas fa-eye-slash"></i> Đóng Khung
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Data Table Section -->
+                <div class="saas-card">
+                    <!-- Table Toolbar -->
+                    <div class="table-toolbar">
+                        <div class="toolbar-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="table-search-input" placeholder="Lọc nhanh bệnh án (Mã BA, BN, Chẩn đoán, Phòng)...">
+                        </div>
+
+                        <!-- Backend Search Form -->
+                        <form action="/benhan" method="get" class="toolbar-actions" style="margin:0;">
+                            <input type="text" name="search" class="form-control" style="width:180px; padding:6px 12px; font-size:0.85rem;" 
+                                   th:value="${search}" placeholder="Tìm trên DB...">
+                            <button type="submit" class="btn btn-secondary btn-sm" title="Tìm kiếm trên database">
+                                <i class="fas fa-filter"></i> Lọc DB
+                            </button>
+                            <a href="/benhan" class="btn btn-outline btn-sm" title="Đặt lại bộ lọc">
+                                <i class="fas fa-rotate"></i> Reset
+                            </a>
+                        </form>
+                    </div>
+
+                    <!-- Table Responsive Container -->
+                    <div class="table-responsive-wrapper">
+                        <table class="saas-table saas-data-table" th:if="${benhans != null and !benhans.isEmpty()}">
+                            <thead>
+                                <tr>
+                                    <th>Mã BA</th>
+                                    <th>Mã BN</th>
+                                    <th>Ngày Khám</th>
+                                    <th>Triệu Chứng</th>
+                                    <th>Tiền Sử Bệnh</th>
+                                    <th>Chẩn Đoán</th>
+                                    <th>Phòng</th>
+                                    <th class="no-sort">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="b : ${benhans}">
+                                    <td>
+                                        <span class="cell-code" th:text="${b.id}">BA001</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info" th:text="${b.patientId}">P001</span>
+                                    </td>
+                                    <td th:text="${#dates.format(b.ngayKham.time, 'dd/MM/yyyy')}">11/11/2026</td>
+                                    <td th:text="${b.trieuChung}" th:title="${b.trieuChung}" 
+                                        style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Ho khan</td>
+                                    <td th:text="${b.tienSuBenh}" th:title="${b.tienSuBenh}"
+                                        style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Bình thường</td>
+                                    <td>
+                                        <strong style="color:var(--text-primary);" th:text="${b.chanDoan}" th:title="${b.chanDoan}">Viêm phế quản</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-warning" th:text="${b.roomId}">R001</span>
+                                    </td>
+                                    <td>
+                                        <div class="cell-actions">
+                                            <a th:href="@{/benhan/edit/{id}(id=${b.id}, search=${search})}" 
+                                               class="btn btn-secondary btn-sm" title="Chỉnh sửa bệnh án">
+                                                <i class="fas fa-pen-to-square"></i> Sửa
+                                            </a>
+                                            <a th:href="@{/benhan/delete/{id}(id=${b.id}, search=${search})}" 
+                                               class="btn btn-ghost-danger btn-sm" title="Xóa bệnh án"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa bệnh án này?')">
+                                                <i class="fas fa-trash-can"></i> Xóa
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Empty State View -->
+                        <div class="empty-state-box table-empty-state" 
+                             th:style="${benhans == null or benhans.isEmpty()} ? 'display:flex;' : 'display:none;'">
+                            <div class="empty-state-icon-wrap">
+                                <i class="fas fa-file-circle-xmark"></i>
+                            </div>
+                            <h3 class="empty-state-title">Chưa có hồ sơ bệnh án</h3>
+                            <p class="empty-state-desc">
+                                Không tìm thấy bệnh án nào theo yêu cầu tìm kiếm hoặc phòng khám chưa có hồ sơ bệnh án.
+                            </p>
+                            <button type="button" class="btn btn-primary" onclick="toggleCollapse('benhanFormCard')">
+                                <i class="fas fa-plus"></i> Lập Bệnh Án Đầu Tiên
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Pagination Footer -->
+                    <div class="table-pagination-footer">
+                        <div class="pagination-info">
+                            Hiển thị <strong>1 - 10</strong> trên tổng số <strong th:text="${benhans != null ? benhans.size() : 0}">0</strong> bản ghi
+                        </div>
+                        <div class="pagination-controls">
+                            <div class="page-size-selector">
+                                <span>Mỗi trang:</span>
+                                <select class="page-size-select">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="pagination-buttons">
+                                <!-- Populated dynamically by admin-saas.js -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Unified Footer -->
+            <div th:replace="~{fragments/admin_nav :: footer}"></div>
         </div>
     </div>
 
-    <script>
-        // Form validation
-        document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('.benhan-form');
-            forms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    const requiredFields = form.querySelectorAll('[required]');
-                    let isValid = true;
-                    
-                    requiredFields.forEach(field => {
-                        if (!field.value.trim()) {
-                            field.classList.add('error');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('error');
-                        }
-                    });
-                    
-                    if (!isValid) {
-                        e.preventDefault();
-                        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
-                    }
-                });
-            });
-            
-            // Remove error class on input
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    this.classList.remove('error');
-                });
-            });
-        });
-    </script>
-
-    <!-- Chatbox Fragment -->
+    <!-- AI Chatbox Assistant -->
     <div th:replace="~{fragments/chatbox :: chatbox}"></div>
+
+    <!-- Core SaaS Scripts -->
+    <script src="/admin-saas.js"></script>
 </body>
 </html>

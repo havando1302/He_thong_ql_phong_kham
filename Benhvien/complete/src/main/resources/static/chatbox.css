@@ -63,3 +63,63 @@
   .chatbox-toggle { right: 16px; bottom: 16px; }
   .chatbox-panel { inset: 12px; width: auto; height: auto; border-radius: 18px; }
 }
+
+
+/* ==========================================================================
+   CHATBOX DARK MODE SUPPORT
+   ========================================================================== */
+html[data-theme="dark"] .chatbox-panel {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="dark"] .chatbox-messages {
+  background: #0b0f19;
+}
+
+html[data-theme="dark"] .message-bubble {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+html[data-theme="dark"] .chat-message.user .message-bubble {
+  background: #0284c7;
+  color: #fff;
+}
+
+html[data-theme="dark"] .chatbox-suggestions {
+  background: #0f172a;
+}
+
+html[data-theme="dark"] .chatbox-suggestions button {
+  background: #1e293b;
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+html[data-theme="dark"] .chatbox-suggestions button:hover {
+  background: #334155;
+}
+
+html[data-theme="dark"] .chatbox-form {
+  background: #0f172a;
+}
+
+html[data-theme="dark"] .chatbox-form textarea {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .chatbox-form textarea:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+html[data-theme="dark"] .chatbox-disclaimer {
+  background: #0f172a;
+  color: #64748b;
+}
