@@ -3,102 +3,147 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cổng thông tin bệnh nhân</title>
+    <title>Hồ Sơ Cá Nhân | Cổng Bệnh Nhân MEDICARE PRO</title>
     <link rel="stylesheet" href="/portal.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="portal-container">
-    <div class="topbar">
-        <div class="brand">
-            <h1>Hệ thống Quản lý Khám Bệnh</h1>
-            <p>Cổng thông tin bệnh nhân</p>
-        </div>
+    <div class="portal-app-wrapper">
+        <!-- Unified Patient Header & Tabs -->
+        <div th:replace="~{fragments/portal_nav :: portal_header(active='profile')}"></div>
 
-        <div class="top-actions">
-            <a class="icon-btn" href="/portal/notifications" aria-label="Thông báo">
-                <i class="fa-regular fa-bell"></i>
-                <span class="badge" th:text="${notificationCount}">2</span>
-            </a>
-            <div class="user-chip">
-                <div class="avatar"><i class="fa-regular fa-user"></i></div>
-                <div class="name" th:text="${displayName}">Nguyễn Văn An</div>
+        <!-- Main Content Area -->
+        <main class="portal-content-container">
+            <!-- Patient Hero Banner -->
+            <div class="patient-hero-banner">
+                <div class="patient-identity">
+                    <div class="patient-avatar-large">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="patient-identity-text">
+                        <h2 th:text="${fullName != null and !fullName.isEmpty() ? fullName : displayName}">Nguyễn Văn An</h2>
+                        <div class="patient-meta-tags">
+                            <span class="badge badge-info">
+                                <i class="fas fa-id-card"></i> 
+                                <span th:text="${patientId != null ? 'Mã BN: ' + patientId : 'Tài khoản portal'}">P001</span>
+                            </span>
+                            <span class="badge badge-success">
+                                <span class="badge-dot"></span> Đang hoạt động
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <a href="/portal/profile/edit" class="btn btn-primary">
+                        <i class="fas fa-user-pen"></i> Chỉnh Sửa Thông Tin
+                    </a>
+                    <a href="/portal/appointments/new" class="btn btn-secondary">
+                        <i class="fas fa-calendar-plus"></i> Đặt Lịch Khám Mới
+                    </a>
+                </div>
             </div>
-        </div>
+
+            <!-- Health Information Cards -->
+            <div class="saas-card">
+                <div class="saas-card-header">
+                    <div class="card-header-left">
+                        <h3 class="card-title">
+                            <i class="fas fa-id-card-clip"></i> Thông Tin Cá Nhân & Liên Lạc
+                        </h3>
+                    </div>
+                    <a href="/portal/profile/edit" class="btn btn-outline btn-sm">
+                        <i class="fas fa-pen-to-square"></i> Cập nhật
+                    </a>
+                </div>
+
+                <div class="saas-card-body">
+                    <div class="info-field-grid">
+                        <div class="info-field-box">
+                            <div class="info-field-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="info-field-data">
+                                <span class="info-field-label">Họ và Tên</span>
+                                <span class="info-field-value" th:text="${fullName != null and !fullName.isEmpty() ? fullName : 'Chưa cập nhật'}">Nguyễn Văn An</span>
+                            </div>
+                        </div>
+
+                        <div class="info-field-box">
+                            <div class="info-field-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="info-field-data">
+                                <span class="info-field-label">Số Điện Thoại</span>
+                                <span class="info-field-value" th:text="${phone != null and !phone.isEmpty() ? phone : 'Chưa cập nhật'}">0912345678</span>
+                            </div>
+                        </div>
+
+                        <div class="info-field-box">
+                            <div class="info-field-icon">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                            <div class="info-field-data">
+                                <span class="info-field-label">Ngày Sinh</span>
+                                <span class="info-field-value" th:text="${dob != null and !dob.isEmpty() ? dob : 'Chưa cập nhật'}">01/01/1990</span>
+                            </div>
+                        </div>
+
+                        <div class="info-field-box">
+                            <div class="info-field-icon">
+                                <i class="fas fa-venus-mars"></i>
+                            </div>
+                            <div class="info-field-data">
+                                <span class="info-field-label">Giới Tính</span>
+                                <span class="info-field-value" th:text="${gender != null and !gender.isEmpty() ? gender : 'Chưa cập nhật'}">Nam</span>
+                            </div>
+                        </div>
+
+                        <div class="info-field-box" style="grid-column: 1 / -1;">
+                            <div class="info-field-icon">
+                                <i class="fas fa-location-dot"></i>
+                            </div>
+                            <div class="info-field-data">
+                                <span class="info-field-label">Địa Chỉ Thường Trú</span>
+                                <span class="info-field-value" th:text="${address != null and !address.isEmpty() ? address : 'Chưa cập nhật'}">123 Đường Lê Lợi, TP. Hà Nội</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security & Account Card -->
+            <div class="saas-card">
+                <div class="saas-card-header">
+                    <div class="card-header-left">
+                        <h3 class="card-title">
+                            <i class="fas fa-shield-halved"></i> An Toàn & Bảo Mật Tài Khoản
+                        </h3>
+                    </div>
+                    <span class="badge badge-success"><i class="fas fa-check"></i> Bảo vệ</span>
+                </div>
+                <div class="saas-card-body" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+                    <div>
+                        <strong style="color:var(--text-primary); display:block; margin-bottom:4px;">Mật Khẩu Đăng Nhập</strong>
+                        <p style="font-size:0.86rem; color:var(--text-muted);">
+                            Nên định kỳ thay đổi mật khẩu để bảo vệ thông tin sức khỏe và lịch sử điều trị cá nhân.
+                        </p>
+                    </div>
+                    <a href="/portal/password" class="btn btn-secondary">
+                        <i class="fas fa-key"></i> Đổi Mật Khẩu
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Unified Patient Footer -->
+        <div th:replace="~{fragments/portal_nav :: portal_footer}"></div>
     </div>
 
-    <nav class="nav">
-        <a class="active" href="/portal/profile"><i class="fa-regular fa-id-card"></i> Thông tin cá nhân</a>
-        <a href="/portal/appointments/new"><i class="fa-regular fa-calendar-plus"></i> Đặt lịch khám</a>
-        <a href="/portal/appointments"><i class="fa-regular fa-calendar-check"></i> Quản lý lịch khám</a>
-        <a href="/portal/benhan"><i class="fa-regular fa-file-lines"></i> Bệnh án</a>
-        <a href="/portal/schedule"><i class="fa-solid fa-pills"></i> Lịch cấp thuốc</a>
-        <a href="/portal/notifications"><i class="fa-regular fa-bell"></i> Thông báo</a>
-        <a href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
-    </nav>
+    <!-- AI Chatbox Assistant -->
+    <div th:replace="~{fragments/chatbox :: chatbox}"></div>
 
-    <div class="content">
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">Thông tin cá nhân</h2>
-                <a class="btn btn-primary" href="/portal/profile/edit"><i class="fa-regular fa-pen-to-square"></i> Chỉnh sửa</a>
-            </div>
-
-            <div class="grid">
-                <div class="field">
-                    <i class="fa-regular fa-user"></i>
-                    <div>
-                        <div class="label">Họ và tên</div>
-                        <div class="value" th:text="${fullName}">Nguyễn Văn An</div>
-                    </div>
-                </div>
-                <div class="field">
-                    <i class="fa-regular fa-envelope"></i>
-                    <div>
-                        <div class="label">Email</div>
-                        <div class="value" th:text="${email}">nguyenvanan@email.com</div>
-                    </div>
-                </div>
-                <div class="field">
-                    <i class="fa-solid fa-phone"></i>
-                    <div>
-                        <div class="label">Số điện thoại</div>
-                        <div class="value" th:text="${phone}">0912345678</div>
-                    </div>
-                </div>
-                <div class="field">
-                    <i class="fa-regular fa-calendar"></i>
-                    <div>
-                        <div class="label">Ngày sinh</div>
-                        <div class="value" th:text="${dob}">15/5/1990</div>
-                    </div>
-                </div>
-                <div class="field">
-                    <i class="fa-solid fa-venus-mars"></i>
-                    <div>
-                        <div class="label">Giới tính</div>
-                        <div class="value" th:text="${gender}">Nam</div>
-                    </div>
-                </div>
-                <div class="field">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <div>
-                        <div class="label">Địa chỉ</div>
-                        <div class="value" th:text="${address}">123 Đường Lê Lợi, Quận 1, TP.HCM</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">Bảo mật</h2>
-                <a class="btn btn-muted" href="/portal/password"><i class="fa-solid fa-key"></i> Đổi mật khẩu</a>
-            </div>
-            <div class="muted">Bạn có thể đổi mật khẩu để bảo vệ tài khoản.</div>
-        </section>
-    </div>
-</div>
-<!-- Chatbox Fragment -->
-<div th:replace="~{fragments/chatbox :: chatbox}"></div></body>
+    <!-- Core Scripts -->
+    <script src="/admin-saas.js"></script>
+</body>
 </html>

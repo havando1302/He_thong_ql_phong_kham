@@ -87,10 +87,10 @@
             </div>
 
             <!-- Notifications -->
-            <div th:if="${error != null}" class="saas-alert alert-error">
+            <div th:if="${error != null}" class="saas-alert alert-error error">
                 <i class="fas fa-circle-exclamation"></i>
                 <div class="saas-alert-content">
-                    <span th:text="${error}"></span>
+                    <span class="error" th:text="${error}"></span>
                 </div>
                 <button type="button" class="saas-alert-close">&times;</button>
             </div>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<!-- ==========================================================================
+     PORTAL HEADER & NAVIGATION FRAGMENT
+     ========================================================================== -->
+<div th:fragment="portal_header(active)" class="portal-header-wrapper">
+    <!-- Topbar -->
+    <header class="saas-topbar portal-topbar">
+        <div class="topbar-left">
+            <!-- Mobile Menu Toggle Button -->
+            <button type="button" class="mobile-menu-trigger" id="portalMobileMenuBtn" aria-label="Mở menu điều hướng">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Patient Portal Brand -->
+            <a href="/portal/profile" class="brand-wrap">
+                <div class="brand-logo-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="brand-info">
+                    <span class="brand-title">MEDICARE PRO</span>
+                    <span class="brand-tagline">
+                        <span class="pulse-dot"></span> Cổng Thông Tin Bệnh Nhân
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <div class="topbar-right">
+            <!-- Real-time Live Clock -->
+            <div class="clock-chip" title="Thời gian phòng khám">
+                <i class="fas fa-clock"></i>
+                <strong id="liveClockTime">--:--:--</strong>
+                <span id="liveClockDate" style="opacity: 0.8; font-size: 0.8rem;">--</span>
+            </div>
+
+            <!-- Notifications Icon Button -->
+            <a href="/portal/notifications" class="theme-switch-btn" title="Thông báo mới" style="position:relative;">
+                <i class="fas fa-bell"></i>
+                <span th:if="${notificationCount != null and notificationCount > 0}" 
+                      class="nav-badge badge-primary" 
+                      style="position:absolute; top:-4px; right:-4px; padding:2px 6px; font-size:0.68rem;"
+                      th:text="${notificationCount}">2</span>
+            </a>
+
+            <!-- Dark / Light Mode Switcher -->
+            <button type="button" class="theme-switch-btn" title="Chuyển chế độ Sáng / Tối" aria-label="Chuyển đổi giao diện Sáng / Tối">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <!-- Patient Profile Pill -->
+            <div class="topbar-user-btn">
+                <div class="topbar-user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="topbar-user-name" th:text="${displayName != null ? displayName : 'Bệnh nhân'}">Bệnh nhân</span>
+                <a href="/logout" class="logout-icon-btn" style="width:24px; height:24px;" title="Đăng xuất" onclick="return confirm('Đăng xuất khỏi cổng bệnh nhân?')">
+                    <i class="fas fa-sign-out-alt" style="font-size:0.8rem;"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Patient Sub-navigation Tabs -->
+    <nav class="portal-nav-bar" id="portalNavBar">
+        <div class="portal-nav-inner">
+            <a href="/portal/profile" class="portal-nav-link" th:classappend="${active == 'profile'} ? 'active' : ''">
+                <i class="fas fa-id-card"></i>
+                <span>Hồ Sơ Của Tôi</span>
+            </a>
+            <a href="/portal/appointments/new" class="portal-nav-link" th:classappend="${active == 'new_appointment'} ? 'active' : ''">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Đặt Lịch Khám</span>
+            </a>
+            <a href="/portal/appointments" class="portal-nav-link" th:classappend="${active == 'appointments'} ? 'active' : ''">
+                <i class="fas fa-calendar-check"></i>
+                <span>Lịch Khám Của Tôi</span>
+            </a>
+            <a href="/portal/benhan" class="portal-nav-link" th:classappend="${active == 'benhan'} ? 'active' : ''">
+                <i class="fas fa-file-medical"></i>
+                <span>Bệnh Án Điện Tử</span>
+            </a>
+            <a href="/portal/schedule" class="portal-nav-link" th:classappend="${active == 'schedule'} ? 'active' : ''">
+                <i class="fas fa-pills"></i>
+                <span>Lịch Cấp Thuốc</span>
+            </a>
+            <a href="/portal/notifications" class="portal-nav-link" th:classappend="${active == 'notifications'} ? 'active' : ''">
+                <i class="fas fa-bell"></i>
+                <span>Thông Báo</span>
+                <span th:if="${notificationCount != null and notificationCount > 0}" 
+                      class="badge badge-warning" style="padding:1px 6px; font-size:0.7rem;"
+                      th:text="${notificationCount}">0</span>
+            </a>
+            <a href="/portal/password" class="portal-nav-link" th:classappend="${active == 'password'} ? 'active' : ''">
+                <i class="fas fa-key"></i>
+                <span>Đổi Mật Khẩu</span>
+            </a>
+        </div>
+    </nav>
+</div>
+
+<!-- ==========================================================================
+     PORTAL FOOTER FRAGMENT
+     ========================================================================== -->
+<footer th:fragment="portal_footer" class="saas-footer" style="margin-top:40px;">
+    <div class="footer-system-status">
+        <span class="status-pulse-dot"></span>
+        <span>Cổng thông tin bệnh nhân trực tuyến 2026 &bull; Hoạt động ổn định</span>
+    </div>
+    <div>
+        <span>Hotline cấp cứu: <strong>1900 6868</strong> &bull; &copy; 2026 MEDICARE PRO.</span>
+    </div>
+</footer>
+
+</html>

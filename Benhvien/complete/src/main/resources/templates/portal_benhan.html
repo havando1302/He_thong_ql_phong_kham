@@ -3,73 +3,134 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bệnh án</title>
+    <title>Bệnh Án Điện Tử | Cổng Bệnh Nhân MEDICARE PRO</title>
     <link rel="stylesheet" href="/portal.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="portal-container">
-    <div class="topbar">
-        <div class="brand">
-            <h1>Hệ thống Quản lý Khám Bệnh</h1>
-            <p>Bệnh án của tôi</p>
-        </div>
-        <div class="top-actions">
-            <a class="icon-btn" href="/portal/notifications" aria-label="Thông báo">
-                <i class="fa-regular fa-bell"></i>
-                <span class="badge" th:text="${notificationCount}">2</span>
-            </a>
-            <div class="user-chip">
-                <div class="avatar"><i class="fa-regular fa-user"></i></div>
-                <div class="name" th:text="${displayName}">Nguyễn Văn An</div>
+    <div class="portal-app-wrapper">
+        <!-- Unified Patient Header & Tabs -->
+        <div th:replace="~{fragments/portal_nav :: portal_header(active='benhan')}"></div>
+
+        <!-- Main Content Area -->
+        <main class="portal-content-container">
+            <div class="page-hero">
+                <div class="hero-titles">
+                    <h1 class="hero-main-title">
+                        <i class="fas fa-file-medical"></i> Hồ Sơ Bệnh Án Điện Tử Của Tôi
+                    </h1>
+                    <p class="hero-subtitle">
+                        Tra cứu toàn bộ lịch sử các lần khám bệnh, kết luận chẩn đoán y khoa và quá trình điều trị tại phòng khám.
+                    </p>
+                </div>
+                <div class="hero-actions">
+                    <a href="/portal/schedule" class="btn btn-secondary">
+                        <i class="fas fa-pills"></i> Xem Lịch Cấp Thuốc
+                    </a>
+                </div>
             </div>
-        </div>
+
+            <!-- Smart Data Table Card -->
+            <div class="saas-card">
+                <!-- Table Toolbar -->
+                <div class="table-toolbar">
+                    <div class="toolbar-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="table-search-input" placeholder="Lọc bệnh án (Mã BA, Ngày khám, Chẩn đoán, Phòng)...">
+                    </div>
+
+                    <div class="toolbar-actions">
+                        <a href="/portal/benhan" class="btn btn-outline btn-sm" title="Tải lại danh sách">
+                            <i class="fas fa-rotate"></i> Tải lại
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Table Responsive Container -->
+                <div class="table-responsive-wrapper">
+                    <table class="saas-table saas-data-table" th:if="${benhans != null and !benhans.isEmpty()}">
+                        <thead>
+                            <tr>
+                                <th>Mã Bệnh Án</th>
+                                <th>Ngày Khám</th>
+                                <th>Kết Luận Chẩn Đoán</th>
+                                <th>Phòng Điều Trị</th>
+                                <th>Tình Trạng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="b : ${benhans}">
+                                <td>
+                                    <span class="cell-code" th:text="${b.id}">BA001</span>
+                                </td>
+                                <td>
+                                    <strong style="color:var(--text-primary); font-family:var(--font-mono); font-size:0.88rem;" th:text="${b.ngayKhamStr}">
+                                        01/06/2026
+                                    </strong>
+                                </td>
+                                <td>
+                                    <strong style="color:var(--text-primary); font-size:0.95rem;" th:text="${b.chanDoan}">
+                                        Viêm phế quản cấp
+                                    </strong>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info" th:text="${b.roomId}">R001</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-success">
+                                        <span class="badge-dot"></span> Đã hoàn tất khám
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Empty State View -->
+                    <div class="empty-state-box table-empty-state" 
+                         th:style="${benhans == null or benhans.isEmpty()} ? 'display:flex;' : 'display:none;'">
+                        <div class="empty-state-icon-wrap">
+                            <i class="fas fa-file-circle-xmark"></i>
+                        </div>
+                        <h3 class="empty-state-title">Chưa có hồ sơ bệnh án nào</h3>
+                        <p class="empty-state-desc">
+                            Bạn chưa có dữ liệu bệnh án được ghi nhận tại phòng khám hoặc tài khoản chưa liên kết với mã hồ sơ bệnh nhân.
+                        </p>
+                        <a href="/portal/appointments/new" class="btn btn-primary">
+                            <i class="fas fa-calendar-plus"></i> Đặt Lịch Khám Ngay
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Interactive Pagination Footer -->
+                <div class="table-pagination-footer">
+                    <div class="pagination-info">
+                        Hiển thị <strong>1 - 10</strong> trên tổng số <strong th:text="${benhans != null ? benhans.size() : 0}">0</strong> bản ghi
+                    </div>
+                    <div class="pagination-controls">
+                        <div class="page-size-selector">
+                            <span>Mỗi trang:</span>
+                            <select class="page-size-select">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                            </select>
+                        </div>
+                        <div class="pagination-buttons">
+                            <!-- Populated dynamically by admin-saas.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Unified Patient Footer -->
+        <div th:replace="~{fragments/portal_nav :: portal_footer}"></div>
     </div>
 
-    <nav class="nav">
-        <a href="/portal/profile"><i class="fa-regular fa-id-card"></i> Thông tin cá nhân</a>
-        <a href="/portal/appointments/new"><i class="fa-regular fa-calendar-plus"></i> Đặt lịch khám</a>
-        <a href="/portal/appointments"><i class="fa-regular fa-calendar-check"></i> Quản lý lịch khám</a>
-        <a class="active" href="/portal/benhan"><i class="fa-regular fa-file-lines"></i> Bệnh án</a>
-        <a href="/portal/schedule"><i class="fa-solid fa-pills"></i> Lịch cấp thuốc</a>
-        <a href="/portal/notifications"><i class="fa-regular fa-bell"></i> Thông báo</a>
-        <a href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
-    </nav>
+    <!-- AI Chatbox Assistant -->
+    <div th:replace="~{fragments/chatbox :: chatbox}"></div>
 
-    <div class="content">
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">Danh sách bệnh án</h2>
-            </div>
-
-            <table class="table" th:if="${benhans != null and !benhans.isEmpty()}">
-                <thead>
-                <tr>
-                    <th>Mã</th>
-                    <th>Ngày khám</th>
-                    <th>Chẩn đoán</th>
-                    <th>Phòng</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="b : ${benhans}">
-                    <td th:text="${b.id}">BA001</td>
-                    <td th:text="${b.ngayKhamStr}">01/06/2025</td>
-                    <td th:text="${b.chanDoan}">Viêm phổi</td>
-                    <td th:text="${b.roomId}">R001</td>
-                </tr>
-                </tbody>
-            </table>
-
-            <div th:if="${benhans == null or benhans.isEmpty()}" class="muted">
-                Chưa có bệnh án nào.
-            </div>
-        </section>
-    </div>
-</div>
-
-<!-- Chatbox Fragment -->
-<div th:replace="~{fragments/chatbox :: chatbox}"></div>
+    <!-- Core Scripts -->
+    <script src="/admin-saas.js"></script>
 </body>
 </html>
-
