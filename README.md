@@ -1,322 +1,310 @@
-# Hệ thống quản lý bệnh nhân tích hợp AI Chatbot hỗ trợ tư vấn và quản lý điều trị
+<div align="center">
 
-Đồ án xây dựng một hệ thống web hỗ trợ quản lý bệnh nhân, hồ sơ bệnh án, phòng điều trị, lịch khám và lịch cấp thuốc. Hệ thống tích hợp AI Chatbot để hướng dẫn người dùng sử dụng cổng bệnh nhân và cung cấp thông tin tư vấn ban đầu dựa trên kho tri thức của bệnh viện.
+# 🏥 MEDICARE PRO — HỆ THỐNG QUẢN LÝ PHÒNG KHÁM & BỆNH NHÂN TÍCH HỢP AI
+### *Enterprise Healthcare Management Platform with AI Assistant & Modern SaaS UX*
 
-> AI Chatbot chỉ có vai trò hỗ trợ thông tin, không thay thế chẩn đoán hoặc tư vấn chuyên môn của bác sĩ.
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.0-brightgreen.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-8.4-blue.svg?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Groq AI](https://img.shields.io/badge/AI%20Engine-Groq%20Llama%203-blueviolet.svg?logo=openai&logoColor=white)](https://groq.com/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Testing](https://img.shields.io/badge/Testing-JUnit%205%20%7C%20Playwright%20%7C%20JMeter%20%7C%20ZAP-red.svg)](https://junit.org/)
+[![UI Style](https://img.shields.io/badge/Design-SaaS%202026%20%7C%20Dark%20Mode-0ea5e9.svg)](#giao-diện--trải-nghiệm-người-dùng-saas-2026)
 
-## Thành viên nhóm
+<p align="center">
+  <b>Dự án Web App Full-Stack hoàn chỉnh chuẩn Enterprise</b><br>
+  Quản lý hồ sơ bệnh nhân, bệnh án chuyên khoa, phòng điều trị, lịch cấp thuốc, duyệt lịch hẹn trực tuyến<br>
+  kết hợp <b>Trợ lý ảo AI thông minh</b> và giao diện <b>SaaS 2026 Responsive, Dark Mode</b>.
+</p>
 
-| STT | Họ và tên |
-| --- | --- |
-| 1 | Nguyễn Mạnh Quyền |
-| 2 | Phạm Văn Hoàng |
-| 3 | Nguyễn Quang Thọ |
-| 4 | Hà Văn Đô |
+---
 
-## Chức năng chính
+</div>
 
-### Quản trị viên và nhân viên
+## 👨‍💻 Tác giả & Nhà phát 
 
-- Đăng nhập, đăng xuất và phân quyền `ADMIN`, `STAFF`, `USER`.
-- Quản lý tài khoản nhân viên và tài khoản người dùng.
-- Quản lý thông tin bệnh nhân.
-- Quản lý bệnh án và quá trình điều trị.
-- Quản lý phòng điều trị và bác sĩ phụ trách.
-- Quản lý lịch cấp thuốc.
-- Theo dõi, xác nhận, hủy và xóa lịch khám.
+* **Họ và tên:** **Hà Văn Đô**
+* **Vai trò:** Full-Stack Software Engineer (Thiết kế kiến trúc, Backend, Frontend, Tích hợp AI, DevOps & Kiểm thử toàn diện)
+* **GitHub:** [@havando1302](https://github.com/havando1302)
+* **Repository:** [He_thong_ql_phong_kham](https://github.com/havando1302/He_thong_ql_phong_kham)
 
-### Cổng bệnh nhân
+> *"Dự án được tôi nghiên cứu, thiết kế kiến trúc và phát triển độc lập từ nền tảng Backend Spring Boot 3.3, tối ưu hóa cơ sở dữ liệu MySQL, xây dựng hệ thống kiểm thử tự động đa tầng (Unit, Integration, E2E, Performance, Security), đến việc thiết kế toàn bộ hệ thống giao diện chuẩn SaaS 2026 thân thiện với trải nghiệm người dùng."*
 
-- Xem và cập nhật hồ sơ cá nhân.
-- Xem bệnh án và lịch cấp thuốc của bản thân.
-- Đặt, theo dõi và hủy lịch khám.
-- Nhận thông báo thực tế từ lịch khám và lịch cấp thuốc.
-- Đổi mật khẩu và quản lý tài khoản cá nhân.
+---
 
-### AI Chatbot
+## 🎯 Tổng quan dự án
 
-- Giao diện trò chuyện tích hợp trên các trang của hệ thống.
-- Hướng dẫn đặt lịch khám, xem bệnh án và lịch cấp thuốc.
-- Trả lời dựa trên kho tri thức nội bộ trong `src/main/resources/knowledge`.
-- Kết nối Groq API và hỗ trợ cấu hình model qua biến môi trường.
-- Có cơ chế bảo vệ CSRF, giới hạn nội dung đầu vào và thông báo miễn trừ y khoa.
+**MEDICARE PRO** là giải pháp phần mềm quản lý phòng khám và bệnh viện đa năng, giải quyết bài toán chuyển đổi số quy trình y tế:
+1. **Phân hệ Quản trị & Nghiệp vụ Y tế (Admin & Staff):** Giúp bác sĩ, điều dưỡng và ban quản trị tiếp nhận bệnh nhân, lưu trữ bệnh án điện tử, phân phòng điều trị, quản lý lịch kê đơn cấp thuốc và phê duyệt lịch hẹn khám linh hoạt.
+2. **Cổng Thông tin Bệnh nhân (Patient Portal):** Cho phép người bệnh theo dõi hồ sơ y tế cá nhân, lịch sử khám, đơn thuốc và chủ động đặt lịch khám online 24/7.
+3. **Trợ lý Ảo AI Y tế (Groq Cloud LLM):** Tích hợp Chatbot AI tư vấn thông tin thủ tục khám, giải đáp thắc mắc dịch vụ y tế theo thời gian thực dựa trên kho tri thức chuẩn hóa (Knowledge Base).
 
-## Công nghệ sử dụng
+---
 
-| Thành phần | Công nghệ |
-| --- | --- |
-| Backend | Java 21, Spring Boot 3.3.0, Spring MVC |
-| Frontend | Thymeleaf, HTML, CSS, JavaScript |
-| Cơ sở dữ liệu | MySQL 8.4, JDBC |
-| AI | Groq API, OkHttp, JSON |
-| Build | Maven |
-| Đóng gói | Docker, Docker Compose |
-| Unit/Integration Test | JUnit 5, Spring Boot Test, MockMvc |
-| API Test | Postman, Newman |
-| UI Test | Playwright, Selenium |
-| Performance Test | Apache JMeter |
-| Security Test | OWASP ZAP |
-| Coverage | JaCoCo 0.8.12 |
+## 🚀 Điểm nhấn kỹ thuật nổi bật (Key Technical Highlights)
 
-## Kiến trúc
+### 1. Kiến trúc Backend bền vững & Hiệu năng cao
+* **Spring Boot 3.3.0 & Java 21 LTS:** Tận dụng Virtual Threads, Pattern Matching và tính năng mới nhất của Java hiện đại.
+* **Tối ưu tầng dữ liệu (Data Access Layer):** Sử dụng JDBC thuần kết hợp Connection Pooling, Prepared Statements chống SQL Injection và Stream API cho các tác vụ lọc/tìm kiếm trong bộ nhớ.
+* **Bảo mật đa tầng (Defense in Depth):**
+  * Phân quyền dựa trên vai trò nghiêm ngặt (**RBAC - Role-Based Access Control**): `ADMIN`, `STAFF`, `USER`.
+  * Bộ lọc bảo vệ **CSRF Token** tự động cho toàn bộ các phương thức `POST/PUT/DELETE`.
+  * Thiết lập **Security Response Headers** tiêu chuẩn quốc tế: `Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`.
+  * Chống giả mạo phiên làm việc với cơ chế xác thực Session bảo mật.
 
-Ứng dụng được tổ chức theo mô hình MVC:
+### 2. Thiết kế Giao diện SaaS 2026 & UX tối ưu
+* **Thiết kế chuẩn SaaS hiện đại:** Phong cách thẩm mỹ tối giản, đường nét hairline sắc sảo, bảng màu y tế chuyên nghiệp Electric Cyan / Teal (`#0284c7`, `#0ea5e9`).
+* **Hỗ trợ Đa nền tảng (Responsive Design):**
+  * **Desktop (≥ 1024px):** Thanh Sidebar điều hướng có thể thu gọn sang chế độ icon-only (`sidebar-is-collapsed`), Topbar kính mờ với đồng hồ phòng khám thời gian thực.
+  * **Tablet (768px - 1023px):** Lưới nội dung thích ứng linh hoạt.
+  * **Mobile (< 768px):** Menu điều hướng dạng trượt (Off-canvas Drawer) mượt mà với lớp phủ mờ (Backdrop).
+* **Bảng dữ liệu thông minh (Interactive Smart Data Table):**
+  * **Phân trang Client-side:** Tùy chọn 5, 10, 25, 50 dòng/trang, đánh số trang, nút Trước/Tiếp và báo cáo tổng số bản ghi.
+  * **Sắp xếp cột (Sorting):** Click tiêu đề cột để sắp xếp tăng/giảm dần (A-Z, 0-9) kèm icon nhận diện trạng thái.
+  * **Lọc tức thì (Real-time Filter):** Tìm kiếm tức thời ngay khi gõ phím mà không cần reload trang.
+  * **Empty State:** Thiết kế đồ họa và thông điệp trực quan khi không tìm thấy kết quả.
+* **Chế độ Sáng / Tối (Dark Mode Engine):**
+  * Chuyển đổi 1-click qua nút Sun/Moon trên Topbar.
+  * Tự động phát hiện theo hệ điều hành (`prefers-color-scheme`) và lưu trạng thái vào `localStorage`.
+  * Tối ưu bảng màu Cosmic Slate cao cấp (`#090d16`, `#0f172a`, `#1e293b`), tương phản tốt và êm dịu cho mắt.
 
-```text
-Client
-  │
-  ▼
-Controller ──► Service / AI Service
-  │                    │
-  ▼                    ▼
-Database classes    Groq API
-  │
-  ▼
-MySQL
+### 3. Tích hợp AI Chatbot (Groq Cloud LLM)
+* Tích hợp mô hình ngôn ngữ lớn qua **Groq API** (Llama-3 tốc độ cao).
+* Truy xuất thông tin theo ngữ cảnh từ kho tri thức nội bộ (`src/main/resources/knowledge/hospital-services.md`).
+* Cơ chế kiểm soát nội dung đầu vào, giới hạn độ dài ký tự và kèm thông báo miễn trừ trách nhiệm y khoa chuẩn mực.
+
+### 4. Quy trình Đảm bảo Chất lượng & Kiểm thử toàn diện (QA & Testing)
+Dự án được xây dựng với tinh thần **Production-Ready**, trang bị đầy đủ các bộ kiểm thử tự động:
+* **Unit & Integration Test:** JUnit 5, Spring Boot Test, MockMvc đạt độ bao phủ cao với **JaCoCo**.
+* **API Testing:** Bộ Postman Collection đầy đủ kịch bản, chạy tự động qua CLI bằng **Newman**.
+* **End-to-End & UI Automation Test:** Sử dụng **Playwright** và **Selenium WebDriver** kiểm thử luồng giao diện người dùng thực tế.
+* **Performance / Stress Test:** Kịch bản **Apache JMeter** giả lập tải đồng thời cho tất cả các endpoint trọng yếu.
+* **Security Scanning:** Quét lỗ hổng tự động với **OWASP ZAP**, đạt báo cáo bảo mật an toàn.
+
+---
+
+## 🛠️ Ngăn xếp công nghệ (Tech Stack)
+
+| Lĩnh vực | Công nghệ sử dụng |
+| :--- | :--- |
+| **Backend Core** | Java 21 LTS, Spring Boot 3.3.0, Spring MVC |
+| **Cơ sở dữ liệu** | MySQL 8.4, JDBC, HikariCP Connection Pool |
+| **Frontend & UI** | Thymeleaf, HTML5, CSS3 Variables, Vanilla JavaScript (ES6+) |
+| **Thiết kế UX/UI** | Responsive Multi-device, SaaS 2026 Design System, Dark Mode Engine |
+| **Trí tuệ nhân tạo (AI)** | Groq Cloud API, OkHttp 4, Knowledge-base Retrieval |
+| **Container & DevOps** | Docker, Docker Compose, Multi-stage Build |
+| **Build Tool** | Apache Maven 3.9+ |
+| **Unit & Integration Test**| JUnit 5, Spring Boot Test, MockMvc, JaCoCo 0.8.12 |
+| **API Testing** | Postman, Newman CLI |
+| **E2E & UI Test** | Microsoft Playwright, Selenium WebDriver |
+| **Performance Testing** | Apache JMeter 5.6.3 |
+| **Security Audit** | OWASP ZAP (Baseline Vulnerability Scan) |
+
+---
+
+## 📐 Kiến trúc hệ thống (System Architecture)
+
+```
+                    ┌──────────────────────────────────────────────┐
+                    │               CLIENT PLATFORMS               │
+                    │   Desktop Browser  │  Tablet  │  Mobile App  │
+                    └──────────────────────┬───────────────────────┘
+                                           │ HTTP/HTTPS (REST & MVC)
+                                           ▼
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                             SPRING BOOT APPLICATION                              │
+│                                                                                  │
+│  ┌────────────────────────────────────────────────────────────────────────────┐  │
+│  │                            SECURITY & FILTERS                              │  │
+│  │   AuthInterceptor (RBAC)  │  CsrfTokenFilter  │  SecurityHeadersFilter     │  │
+│  └─────────────────────────────────────┬──────────────────────────────────────┘  │
+│                                        │                                         │
+│  ┌─────────────────────────────────────▼──────────────────────────────────────┐  │
+│  │                            CONTROLLER LAYER                                │  │
+│  │   PatientController    │  BenhanController      │  RoomController          │  │
+│  │   ScheduleController   │  AppointmentController │  AdminAccountController  │  │
+│  │   PortalController     │  Login/Register        │  ChatController (AI)     │  │
+│  └──────────────────┬─────────────────────────────────────┬───────────────────┘  │
+│                     │                                     │                      │
+│  ┌──────────────────▼───────────────────┐  ┌──────────────▼───────────────────┐  │
+│  │        DATA ACCESS LAYER (JDBC)      │  │        SERVICE & AI LAYER        │  │
+│  │   PatientDatabase │ BenhanDatabase   │  │   AIService (Groq Cloud LLM)     │  │
+│  │   RoomDatabase    │ ScheduleDatabase │  │   KnowledgeBaseService (RAG)     │  │
+│  │   UserDatabase    │ ApptDatabase     │  │   Prompt Defense & Sanitizer     │  │
+│  └──────────────────┬───────────────────┘  └──────────────┬───────────────────┘  │
+└─────────────────────┼─────────────────────────────────────┼──────────────────────┘
+                      │                                     │
+                      ▼                                     ▼
+        ┌───────────────────────────┐         ┌───────────────────────────┐
+        │       MySQL 8.4 RDBMS     │         │      GROQ CLOUD API       │
+        │   Persistent Data Storage │         │   Llama-3 LLM Inference   │
+        └───────────────────────────┘         └───────────────────────────┘
 ```
 
-- `Controller`: tiếp nhận HTTP request, kiểm tra phiên đăng nhập và điều phối view.
-- `Model`: biểu diễn bệnh nhân, bệnh án, phòng, lịch thuốc, lịch khám và người dùng.
-- `database`: thao tác dữ liệu bằng JDBC.
-- `service`: xử lý AI Chatbot và kho tri thức.
-- `security`: xác thực phiên, CSRF và HTTP security headers.
-- `templates`: giao diện Thymeleaf.
-- `static`: CSS, JavaScript và hình ảnh.
+---
 
-## Cấu trúc thư mục
+## 📂 Cấu trúc thư mục dự án
 
 ```text
-UDPT/
+He_thong_ql_phong_kham/
 ├── Benhvien/
 │   └── complete/
+│       ├── docker/                             # Dockerfile và cấu hình MySQL / ZAP
+│       │   ├── mysql/init.sql                  # Script khởi tạo Database mẫu
+│       │   └── zap/                            # Cấu hình quét an ninh bảo mật
+│       ├── performance/                        # Kịch bản kiểm thử hiệu năng JMeter
+│       │   └── PT_All_Hospital.jmx
+│       ├── postman/                            # Bộ API Test Postman & Newman
+│       │   ├── Hospital.postman_collection.json
+│       │   └── Hospital.postman_environment.json
+│       ├── selenium-tests/                     # Bộ kiểm thử Selenium Java
+│       ├── ui-tests/                           # Bộ kiểm thử tự động Playwright (JS)
+│       │   └── tests/
 │       ├── src/
 │       │   ├── main/
 │       │   │   ├── java/com/example/servingwebcontent/
-│       │   │   │   ├── Controller/
-│       │   │   │   ├── Model/
-│       │   │   │   ├── database/
-│       │   │   │   ├── security/
-│       │   │   │   └── service/
+│       │   │   │   ├── Controller/             # Xử lý Request & View Dispatching
+│       │   │   │   ├── database/               # Thao tác cơ sở dữ liệu qua JDBC
+│       │   │   │   ├── Model/                  # Entity Models & Enums
+│       │   │   │   ├── security/               # Bộ lọc CSRF, Interceptor & Security Headers
+│       │   │   │   └── service/                # Logic AI Groq & Knowledge Base Service
 │       │   │   └── resources/
-│       │   │       ├── knowledge/
-│       │   │       ├── static/
-│       │   │       └── templates/
-│       │   └── test/java/com/example/servingwebcontent/
-│       │       ├── database/
-│       │       ├── integration/
-│       │       ├── model/
-│       │       ├── security/
-│       │       └── service/
-│       ├── docker/mysql/init/
-│       ├── performance/
-│       ├── postman/
-│       ├── ui-tests/
-│       ├── docker-compose.yml
-│       └── pom.xml
-└── README.md
+│       │   │       ├── knowledge/              # Kho tri thức markdown cho AI Chatbot
+│       │   │       ├── static/                 # Tài nguyên CSS, JS, Asset hình ảnh
+│       │   │       │   ├── admin-saas.css      # SaaS 2026 Master Design System
+│       │   │       │   ├── admin-saas.js       # Universal Table, Pagination & Theme Engine
+│       │   │       │   ├── chatbox.css         # Widget Chatbot giao diện Sáng/Tối
+│       │   │       │   └── chatbox.js
+│       │   │       ├── templates/              # View HTML Thymeleaf
+│       │   │       │   ├── fragments/          # Layout Sidebar, Topbar, Footer, Chatbox
+│       │   │       │   ├── dashboard.html      # Tổng quan trung tâm điều hành
+│       │   │       │   ├── patients.html       # Quản lý hồ sơ bệnh nhân
+│       │   │       │   ├── benhan.html         # Quản lý bệnh án điều trị
+│       │   │       │   ├── phongdieutri.html   # Quản lý phòng khám chuyên khoa
+│       │   │       │   ├── lichcapthuoc.html   # Quản lý lịch phát thuốc
+│       │   │       │   ├── appointments_manage.html # Duyệt lịch hẹn khám
+│       │   │       │   ├── admin_accounts.html # Quản trị tài khoản & phân quyền
+│       │   │       │   ├── admin_staff.html    # Cấp tài khoản nhân viên y tế
+│       │   │       │   ├── admin_profile.html  # Hồ sơ chi tiết & liên kết mã BN
+│       │   │       │   ├── index.html          # Giao diện Đăng nhập SaaS
+│       │   │       │   └── register.html       # Giao diện Đăng ký tài khoản
+│       │   │       └── application.properties
+│       │   └── test/                           # Bộ kiểm thử Unit & Integration (JUnit 5)
+│       ├── docker-compose.yml                  # Khởi chạy toàn bộ hệ thống bằng Docker
+│       └── pom.xml                             # Cấu hình phụ thuộc Maven & Build plugins
+└── README.md                                   # Tài liệu dự án
 ```
 
-## Yêu cầu môi trường
+---
 
-- Java JDK 21.
-- Maven 3.9 trở lên hoặc Maven Wrapper.
-- Docker Desktop và Docker Compose.
-- Node.js khi chạy Playwright hoặc Newman.
-- Apache JMeter 5.6.3 khi chạy kiểm thử hiệu năng.
+## ⚡ Hướng dẫn cài đặt & Khởi chạy (Quick Start)
 
-## Cấu hình
+### Cách 1: Khởi chạy nhanh nhất qua Docker (Khuyên dùng)
 
-Các biến môi trường chính:
+Yêu cầu máy tính đã cài đặt [Docker Desktop](https://www.docker.com/). Chỉ cần 1 lệnh duy nhất:
 
-| Biến | Giá trị mặc định | Ý nghĩa |
-| --- | --- | --- |
-| `DB_HOST` | `localhost` | Máy chủ MySQL |
-| `DB_PORT` | `3306` | Cổng MySQL |
-| `DB_USERNAME` | `hospital` | Tài khoản MySQL |
-| `DB_PASSWORD` | `hospital_secret` | Mật khẩu MySQL |
-| `APP_PORT` | `8080` | Cổng ứng dụng khi dùng Docker |
-| `GROQ_API_KEY` | trống | API key của Groq |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Model AI |
-| `GROQ_API_URL` | Groq Chat Completions API | Địa chỉ API AI |
-
-Không đưa API key hoặc mật khẩu thật lên Git.
-
-## Khởi chạy bằng Docker
-
-Mở PowerShell tại thư mục ứng dụng:
-
-```powershell
-cd E:\UDPT\Benhvien\complete
-docker compose up -d --build
-docker compose ps
-```
-
-Truy cập:
-
-```text
-http://localhost:8080
-```
-
-Dừng hệ thống:
-
-```powershell
-docker compose down
-```
-
-Khởi tạo lại hoàn toàn cơ sở dữ liệu:
-
-```powershell
-docker compose down -v
+```bash
+cd Benhvien/complete
 docker compose up -d --build
 ```
 
-Lệnh trên xóa dữ liệu trong Docker volume, chỉ sử dụng khi thực sự muốn tạo lại database.
+Hệ thống sẽ tự động build ứng dụng Spring Boot và khởi tạo cơ sở dữ liệu MySQL 8.4 đã nạp sẵn dữ liệu ban đầu.
+* **Truy cập ứng dụng tại:** `http://localhost:8080`
+* Dừng hệ thống:
+  ```bash
+  docker compose down
+  ```
 
-## Khởi chạy bằng Maven
+---
 
-Khởi động MySQL trước, sau đó chạy:
+### Cách 2: Khởi chạy thủ công qua Maven
 
-```powershell
-cd E:\UDPT\Benhvien\complete
-mvn spring-boot:run
+1. **Khởi động dịch vụ MySQL 8.4** và tạo database `hospital` từ file `Benhvien/complete/docker/mysql/init.sql`.
+2. **Cấu hình thông tin kết nối** trong `src/main/resources/application.properties` (hoặc truyền qua biến môi trường):
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/hospital?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+   spring.datasource.username=root
+   spring.datasource.password=123456
+   ```
+3. *(Tùy chọn)* Cấu hình Groq API Key cho AI Chatbot:
+   ```bash
+   export GROQ_API_KEY="gsk_your_api_key_here"
+   ```
+4. **Khởi chạy ứng dụng:**
+   ```bash
+   cd Benhvien/complete
+   ./mvnw spring-boot:run
+   ```
+   *(Trên Windows PowerShell: `.\mvnw.cmd spring-boot:run`)*
+
+---
+
+## 🔑 Tài khoản mẫu để kiểm thử tính năng (Demo Accounts)
+
+| Vai trò (Role) | Tên đăng nhập | Mật khẩu | Quyền hạn chính |
+| :--- | :--- | :--- | :--- |
+| **Quản trị viên (ADMIN)** | `admin` | `123456` | Toàn quyền quản trị hệ thống, quản lý tài khoản, tạo nhân viên, phân quyền RBAC |
+| **Nhân viên y tế (STAFF)** | `staff` | `123456` | Quản lý bệnh nhân, lập bệnh án, phòng điều trị, cấp thuốc, duyệt lịch hẹn |
+| **Bệnh nhân (USER)** | `patient1` | `123456` | Cổng portal bệnh nhân, xem hồ sơ cá nhân, lịch thuốc, đặt lịch khám online |
+
+---
+
+## 🧪 Quy trình kiểm thử chất lượng (Testing & QA)
+
+### 1. Unit & Integration Test (JUnit 5 + MockMvc)
+Chạy toàn bộ test suite và xuất báo cáo độ bao phủ:
+```bash
+cd Benhvien/complete
+./mvnw test
+```
+* Báo cáo kiểm thử: `target/surefire-reports`
+* Báo cáo bao phủ mã nguồn (JaCoCo): `target/site/jacoco/index.html`
+
+### 2. Automated API Test (Postman / Newman)
+Kiểm thử tự động toàn bộ API endpoints của hệ thống qua dòng lệnh:
+```bash
+cd Benhvien/complete
+npx newman run postman/Hospital.postman_collection.json \
+  -e postman/Hospital.postman_environment.json \
+  --reporters cli,json \
+  --reporter-json-export postman/Hospital.postman_result.json
 ```
 
-Hoặc dùng Maven Wrapper:
-
-```powershell
-..\..\mvnw.cmd spring-boot:run
+### 3. UI & End-to-End Automation Test (Playwright)
+Kiểm thử tự động luồng giao diện người dùng thực tế:
+```bash
+cd Benhvien/complete/ui-tests
+npm install
+npx playwright test
 ```
 
-Ứng dụng chạy thành công khi Terminal hiển thị:
-
-```text
-Tomcat started on port 8080
-Started ServingWebContentApplication
+### 4. Kiểm thử tải & Hiệu năng (Apache JMeter)
+Kiểm thử khả năng chịu tải đồng thời của hệ thống:
+```bash
+jmeter -n -t performance/PT_All_Hospital.jmx -l performance/result-final.jtl
 ```
 
-## Tài khoản mẫu
+### 5. Quét bảo mật tự động (OWASP ZAP)
+Báo cáo rà quét lỗ hổng ứng dụng được tạo tại:
+* `Benhvien/complete/zap-report.html`
 
-| Vai trò | Tài khoản | Mật khẩu |
-| --- | --- | --- |
-| Admin | `admin` | `123456` |
-| Nhân viên | `staff` | `123456` |
-| Bệnh nhân | `patient1` | `123456` |
-| Bệnh nhân | `patient2` | `123456` |
+---
 
-Các tài khoản mẫu chỉ dành cho môi trường phát triển và kiểm thử.
+## 📈 Định hướng mở rộng trong tương lai (Roadmap)
 
-## Kiểm thử
+- [ ] Nâng cấp mã hóa mật khẩu người dùng với thuật toán BCrypt / Argon2id.
+- [ ] Tích hợp dịch vụ gửi thông báo tự động (Email thông báo lịch khám & SMS OTP).
+- [ ] Xây dựng RESTful API chuẩn OpenAPI/Swagger để kết nối ứng dụng di động Flutter/React Native.
+- [ ] Ứng dụng quy trình CI/CD hoàn chỉnh (GitHub Actions -> Docker Hub -> VPS Cloud Deployment).
+- [ ] Nâng cấp cơ chế RAG (Retrieval-Augmented Generation) với Vector Database cho AI Chatbot chẩn đoán hỗ trợ bác sĩ.
 
-### JUnit và Spring Boot Test
+---
 
-Chạy toàn bộ test:
+## 📄 Bản quyền & Tuyên bố trách nhiệm y tế
 
-```powershell
-cd E:\UDPT\Benhvien\complete
-mvn test
-```
+* Dự án được xây dựng và phát triển độc lập bởi **Hà Văn Đô** phục vụ mục đích nghiên cứu, học thuật và trình diễn năng lực kỹ thuật phần mềm.
+* **Tuyên bố trách nhiệm:** Thành phần Trợ lý AI trong dự án đóng vai trò hỗ trợ hướng dẫn thông tin dịch vụ và thủ tục khám, không thay thế cho chẩn đoán, tư vấn chuyên môn hay phác đồ điều trị của bác sĩ chuyên khoa.
 
-Chạy riêng Integration Test:
-
-```powershell
-mvn "-Dtest=*IntegrationTest" test
-```
-
-Chạy các Database Test tiêu biểu:
-
-```powershell
-mvn "-Dtest=PatientDatabaseTest,AppointmentDatabaseTest,UserDatabaseTest" test
-```
-
-Báo cáo Surefire nằm trong `target/surefire-reports`. Báo cáo coverage JaCoCo nằm trong `target/site/jacoco/index.html`.
-
-### Postman/Newman
-
-Các file kiểm thử API:
-
-```text
-postman/Hospital.postman_collection.json
-postman/Hospital.postman_environment.json
-```
-
-Chạy bằng Terminal PowerShell:
-
-```powershell
-cd E:\UDPT\Benhvien\complete
-$env:NODE_OPTIONS="--use-system-ca"
-npx.cmd --yes newman run `
-  postman\Hospital.postman_collection.json `
-  -e postman\Hospital.postman_environment.json `
-  --reporters cli,json `
-  --reporter-json-export postman\Hospital.postman_result.json
-```
-
-### Playwright
-
-```powershell
-cd E:\UDPT\Benhvien\complete\ui-tests
-npm.cmd install
-npx.cmd playwright install
-npm.cmd test
-```
-
-Mở báo cáo:
-
-```powershell
-npm.cmd run report
-```
-
-### JMeter
-
-Chạy Test Plan không dùng giao diện:
-
-```powershell
-cd E:\UDPT\Benhvien\complete
-& "E:\apache-jmeter-5.6.3\apache-jmeter-5.6.3\bin\jmeter.bat" `
-  -n `
-  -t "performance\PT_All_Hospital.jmx" `
-  -l "performance\result-final.jtl" `
-  -Jsummariser.interval=5
-```
-
-Test Plan bao gồm đăng nhập, quản lý bệnh nhân, bệnh án, phòng điều trị, lịch cấp thuốc, lịch khám và Chatbot.
-
-### OWASP ZAP
-
-Báo cáo bảo mật hiện có:
-
-```text
-Benhvien/complete/zap-report.html
-Benhvien/complete/docker/zap/reports/baseline-report.html
-```
-
-Mở báo cáo:
-
-```powershell
-Start-Process E:\UDPT\Benhvien\complete\zap-report.html
-```
-
-## Bảo mật
-
-- Xác thực và phân quyền dựa trên session.
-- CSRF token cho các yêu cầu thay đổi dữ liệu.
-- Security headers: CSP, chống clickjacking và hạn chế MIME sniffing.
-- Kiểm tra dữ liệu đầu vào tại controller và Chatbot.
-- Cấu hình kết nối database qua biến môi trường.
-- OWASP ZAP dùng để rà quét các vấn đề bảo mật web.
-
-## Hướng phát triển
-
-- Mã hóa mật khẩu bằng BCrypt.
-- Bổ sung trạng thái đã đọc/chưa đọc cho thông báo.
-- Gửi thông báo qua email hoặc thiết bị di động.
-- Thêm phân trang và bộ lọc nâng cao.
-- Sử dụng migration database bằng Flyway hoặc Liquibase.
-- Mở rộng kho tri thức và cơ chế truy xuất dữ liệu cho AI Chatbot.
-- Triển khai CI/CD và môi trường production.
-
-## Giấy phép và mục đích sử dụng
-
-Dự án được phát triển phục vụ học tập và nghiên cứu. Không sử dụng AI Chatbot trong dự án để thay thế tư vấn, chẩn đoán hoặc điều trị y khoa chuyên nghiệp.
-#   H e _ t h o n g _ q l _ p h o n g _ k h a m  
- 
+<div align="center">
+  <sub>Made with ❤️ and dedication by <b>Hà Văn Đô</b> &bull; 2026</sub>
+</div>
